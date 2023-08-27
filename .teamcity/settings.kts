@@ -188,6 +188,10 @@ object Proton_Backend_2_Deploy : BuildType({
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
+    vcs {
+        root(AbsoluteId("ProtomathCoreApiGit"))
+    }
+
     steps {
         kotlinScript {
             name = "check deploy CURRENT_TAG"
