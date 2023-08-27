@@ -316,7 +316,7 @@ object Proton_Backend_2_Publish : BuildType({
 
 
 object Proton_Front_2 : Project({
-    name = "front (1)"
+    name = "front"
 
     buildType(Proton_Front_2_BuildDocker)
     buildType(Proton_Front_2_DeployKuber)
