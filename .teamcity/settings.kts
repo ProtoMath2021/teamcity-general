@@ -125,6 +125,12 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
+
+    steps {
+        gradle {
+            tasks = "createDockerfile"
+        }
+    }
 })
 
 
