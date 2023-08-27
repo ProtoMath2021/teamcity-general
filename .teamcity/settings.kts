@@ -107,6 +107,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend : Project({
     id("Projectexp_Backend")
     name = "backend"
 
+    buildType(ProtomathTeamcityPipeline_Projectexp_Backend_Deploy)
     buildType(ProtomathTeamcityPipeline_Projectexp_Backend_Build)
     buildType(ProtomathTeamcityPipeline_Projectexp_Backend_Publish)
 })
@@ -128,6 +129,11 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             jdkHome = "%env.JDK_17_0%"
         }
     }
+})
+
+object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
+    id("Projectexp_Backend_Deploy")
+    name = "deploy"
 })
 
 object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
