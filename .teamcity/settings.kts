@@ -104,6 +104,10 @@ object ProtomathTeamcityPipeline_Projectexp_Backend : Project({
 object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     id("Projectexp_Backend_Build")
     name = "build"
+
+    vcs {
+        root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
+    }
 })
 
 
