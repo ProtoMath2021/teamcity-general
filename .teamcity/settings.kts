@@ -122,6 +122,10 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
     id("Projectexp_Backend_Publish")
     name = "publish"
 
+    params {
+        text("CURRENT_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
+    }
+
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
