@@ -155,6 +155,13 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
             }
         }
     }
+
+    dependencies {
+        artifacts(ProtomathTeamcityPipeline_Projectexp_Backend_Build) {
+            cleanDestination = true
+            artifactRules = "+:./out/*.* => ./artifact"
+        }
+    }
 })
 
 
