@@ -71,6 +71,7 @@ object ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGi
         userName = "git"
         uploadedKey = "prexp-back-teamcity"
     }
+    param("secure:password", "")
 })
 
 object ProtomathUiNewGit : GitVcsRoot({
