@@ -108,6 +108,13 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
+
+    steps {
+        gradle {
+            tasks = "clean assemble"
+            jdkHome = "%env.JDK_17_0%"
+        }
+    }
 })
 
 
