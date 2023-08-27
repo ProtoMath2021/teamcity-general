@@ -129,6 +129,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
     steps {
         gradle {
             tasks = "createDockerfile"
+            jdkHome = "%env.JDK_17_0%"
         }
     }
 })
