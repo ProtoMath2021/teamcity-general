@@ -139,6 +139,24 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
+
+    steps {
+        script {
+            name = "deploy helm"
+            workingDir = ".helm"
+            scriptContent = """
+                helm upgrade -i --namespace protonmath \
+                	--set app.version=%DEPLOY_TAG% \
+                    --set database.host=%db-host% \
+                    --set database.port=%db-port% \
+                    --set database.user=%db-user% \
+                    --set database.name=%db-name% \
+                    --set database.password=%db-pass% \
+                    --set keycloak.certUrl=%CERT_URL% \
+                	backend .
+            """.trimIndent()
+        }
+    }
 })
 
 object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
