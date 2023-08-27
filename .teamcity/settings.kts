@@ -85,6 +85,7 @@ object Proton_Backend_2 : Project({
 })
 
 object Proton_Backend_2_Build : BuildType({
+    templates(BackendTemplate)
     name = "build"
 
     artifactRules = "+:out => out"
@@ -106,6 +107,7 @@ object Proton_Backend_2_Build : BuildType({
     steps {
         script {
             name = "get git tags"
+            id = "RUNNER_1"
             scriptContent = """
                 (git describe --exact-match --tags HEAD 2>/dev/null || echo null) | xargs -I {} echo \"##teamcity[setParameter name=\'HEAD_TAG\' value=\'{}\']\"
                 (git describe --abbrev=0 --tags ${'$'}(git rev-list --tags --max-count=1) 2>/dev/null || echo null) | xargs -I {} echo \"##teamcity[setParameter name=\'LAST_TAG\' value=\'{}\']\"
@@ -113,6 +115,7 @@ object Proton_Backend_2_Build : BuildType({
         }
         kotlinScript {
             name = "Get current tag"
+            id = "RUNNER_2"
             content = """
                 fun String.incMinor(): String {
                     val parts = this.split(".")
@@ -148,11 +151,13 @@ object Proton_Backend_2_Build : BuildType({
             """.trimIndent()
         }
         gradle {
+            id = "RUNNER_3"
             tasks = "clean assemble"
             jdkHome = "%env.JDK_17%"
         }
         kotlinScript {
             name = "Check build condition"
+            id = "RUNNER_4"
             content = """
                 val branch = "%BRANCH%"
                 val head = "%HEAD_TAG%"
