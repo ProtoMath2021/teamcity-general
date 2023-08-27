@@ -110,6 +110,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend : Project({
     buildType(ProtomathTeamcityPipeline_Projectexp_Backend_Deploy)
     buildType(ProtomathTeamcityPipeline_Projectexp_Backend_Build)
     buildType(ProtomathTeamcityPipeline_Projectexp_Backend_Publish)
+    buildTypesOrder = arrayListOf(ProtomathTeamcityPipeline_Projectexp_Backend_Build, ProtomathTeamcityPipeline_Projectexp_Backend_Publish, ProtomathTeamcityPipeline_Projectexp_Backend_Deploy)
 })
 
 object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
