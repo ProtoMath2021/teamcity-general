@@ -48,15 +48,8 @@ object Proton : Project({
     name = "proton"
 
     subProject(Proton_Front_2)
-    subProject(Proton_Backend)
     subProject(Proton_Front)
     subProject(Proton_Backend_2)
-})
-
-
-object Proton_Backend : Project({
-    name = "backend"
-    archived = true
 })
 
 
