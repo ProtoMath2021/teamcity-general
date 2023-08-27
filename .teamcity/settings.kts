@@ -41,6 +41,15 @@ project {
 
     template(ProtomathTeamcityPipeline_BackendTemplate)
 
+    features {
+        dockerRegistry {
+            id = "PROJECT_EXT_5"
+            name = "Docker Registry"
+            userName = "protonmath"
+            password = "zxxc0ce9241d87412ebc5a4bd5fa5ffed29"
+        }
+    }
+
     subProject(ProtomathTeamcityPipeline_Projectexp)
     subProject(ProtomathTeamcityPipeline_Proton)
 }
