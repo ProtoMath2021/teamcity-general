@@ -415,10 +415,6 @@ object Proton_Front_2_DeployKuber : BuildType({
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = false)
     }
 
-    vcs {
-        root(GitGithubComProtoMath2021protomathTeamcityPipelineGitRefsHeadsMaster)
-    }
-
     steps {
         script {
             name = "deploy helm"
