@@ -35,6 +35,7 @@ version = "2022.10"
 
 project {
 
+    vcsRoot(ProtomathUiNewGit)
     vcsRoot(ProtomathCoreApiGit)
 
     template(ProtomathTeamcityPipeline_BackendTemplate)
@@ -58,6 +59,17 @@ object ProtomathCoreApiGit : GitVcsRoot({
         uploadedKey = "proton-back-teamcity"
     }
     param("secure:password", "")
+})
+
+object ProtomathUiNewGit : GitVcsRoot({
+    id = AbsoluteId("ProtomathUiNewGit")
+    name = "git@github.com:ProtoMath2021/protomath-ui-new.git"
+    url = "git@github.com:ProtoMath2021/protomath-ui-new.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "proton-front-teamcity"
+    }
 })
 
 
@@ -406,7 +418,7 @@ object ProtomathTeamcityPipeline_Proton_Front_2_BuildDocker : BuildType({
     }
 
     vcs {
-        root(AbsoluteId("ProtomathUiNewGit"))
+        root(ProtomathUiNewGit)
     }
 
     steps {
@@ -436,7 +448,7 @@ object ProtomathTeamcityPipeline_Proton_Front_2_BuildDocker : BuildType({
             }
         }
         vcsLabeling {
-            vcsRootId = "ProtomathUiNewGit"
+            vcsRootId = "${ProtomathUiNewGit.id}"
             labelingPattern = "%DEPLOY_TAG%"
             successfulOnly = true
             branchFilter = "master"
