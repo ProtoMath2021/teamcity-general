@@ -7,6 +7,7 @@ import jetbrains.buildServer.configs.kotlin.buildSteps.kotlinScript
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerRegistry
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 
 /*
 The settings script is an entry point for defining a TeamCity
@@ -34,49 +35,69 @@ version = "2022.10"
 
 project {
 
-    template(BackendTemplate)
+    vcsRoot(ProtomathCoreApiGit)
 
-    subProject(Projectexp)
-    subProject(Proton)
+    template(ProtomathTeamcityPipeline_BackendTemplate)
+
+    subProject(ProtomathTeamcityPipeline_Projectexp)
+    subProject(ProtomathTeamcityPipeline_Proton)
 }
 
-object BackendTemplate : Template({
+object ProtomathTeamcityPipeline_BackendTemplate : Template({
+    id("BackendTemplate")
     name = "backend-template"
 })
 
+object ProtomathCoreApiGit : GitVcsRoot({
+    id = AbsoluteId("ProtomathCoreApiGit")
+    name = "git@github.com:ProtoMath2021/protomath-core-api.git"
+    url = "git@github.com:ProtoMath2021/protomath-core-api.git"
+    branch = "master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "proton-back-teamcity"
+    }
+    param("secure:password", "")
+})
 
-object Projectexp : Project({
+
+object ProtomathTeamcityPipeline_Projectexp : Project({
+    id("Projectexp")
     name = "projectexp"
 
-    subProject(Projectexp_Backend)
+    subProject(ProtomathTeamcityPipeline_Projectexp_Backend)
 })
 
 
-object Projectexp_Backend : Project({
+object ProtomathTeamcityPipeline_Projectexp_Backend : Project({
+    id("Projectexp_Backend")
     name = "backend"
 
-    buildType(Projectexp_Backend_Build)
+    buildType(ProtomathTeamcityPipeline_Projectexp_Backend_Build)
 })
 
-object Projectexp_Backend_Build : BuildType({
+object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
+    id("Projectexp_Backend_Build")
     name = "build"
 })
 
 
-object Proton : Project({
+object ProtomathTeamcityPipeline_Proton : Project({
+    id("Proton")
     name = "proton"
 
-    subProject(Proton_Front_2)
-    subProject(Proton_Backend_2)
+    subProject(ProtomathTeamcityPipeline_Proton_Front_2)
+    subProject(ProtomathTeamcityPipeline_Proton_Backend_2)
 })
 
 
-object Proton_Backend_2 : Project({
+object ProtomathTeamcityPipeline_Proton_Backend_2 : Project({
+    id("Proton_Backend_2")
     name = "backend"
 
-    buildType(Proton_Backend_2_Publish)
-    buildType(Proton_Backend_2_Deploy)
-    buildType(Proton_Backend_2_Build)
+    buildType(ProtomathTeamcityPipeline_Proton_Backend_2_Publish)
+    buildType(ProtomathTeamcityPipeline_Proton_Backend_2_Deploy)
+    buildType(ProtomathTeamcityPipeline_Proton_Backend_2_Build)
 
     params {
         password("db-pass", "zxxa604baaec7c27caf057cd168a37737e8", display = ParameterDisplay.HIDDEN)
@@ -94,18 +115,19 @@ object Proton_Backend_2 : Project({
             password = "zxxc0ce9241d87412ebc5a4bd5fa5ffed29"
         }
     }
-    buildTypesOrder = arrayListOf(Proton_Backend_2_Build, Proton_Backend_2_Publish, Proton_Backend_2_Deploy)
+    buildTypesOrder = arrayListOf(ProtomathTeamcityPipeline_Proton_Backend_2_Build, ProtomathTeamcityPipeline_Proton_Backend_2_Publish, ProtomathTeamcityPipeline_Proton_Backend_2_Deploy)
 })
 
-object Proton_Backend_2_Build : BuildType({
-    templates(BackendTemplate)
+object ProtomathTeamcityPipeline_Proton_Backend_2_Build : BuildType({
+    templates(ProtomathTeamcityPipeline_BackendTemplate)
+    id("Proton_Backend_2_Build")
     name = "build"
 
     artifactRules = "+:out => out"
     publishArtifacts = PublishMode.SUCCESSFUL
 
     params {
-        param("BRANCH", "%vcsroot.ProtomathCoreApiGit.branch%")
+        param("BRANCH", "${ProtomathCoreApiGit.paramRefs["branch"]}")
         param("CURRENT_TAG", "")
         param("HEAD_TAG", "")
         param("teamcity.git.fetchAllHeads", "true")
@@ -114,7 +136,7 @@ object Proton_Backend_2_Build : BuildType({
     }
 
     vcs {
-        root(AbsoluteId("ProtomathCoreApiGit"))
+        root(ProtomathCoreApiGit)
     }
 
     steps {
@@ -155,7 +177,7 @@ object Proton_Backend_2_Build : BuildType({
                         }
                     }
                 }
-                val branch: String = "%vcsroot.ProtomathCoreApiGit.branch%"
+                val branch: String = "${ProtomathCoreApiGit.paramRefs["branch"]}"
                 val buildNumber = "%build.number%"
                 val head = "%HEAD_TAG%"
                 val last = "%LAST_TAG%"
@@ -186,8 +208,9 @@ object Proton_Backend_2_Build : BuildType({
     }
 })
 
-object Proton_Backend_2_Deploy : BuildType({
-    templates(BackendTemplate)
+object ProtomathTeamcityPipeline_Proton_Backend_2_Deploy : BuildType({
+    templates(ProtomathTeamcityPipeline_BackendTemplate)
+    id("Proton_Backend_2_Deploy")
     name = "deploy"
 
     enablePersonalBuilds = false
@@ -196,13 +219,13 @@ object Proton_Backend_2_Deploy : BuildType({
     maxRunningBuilds = 1
 
     params {
-        param("CURRENT_TAG", "${Proton_Backend_2_Publish.depParamRefs["CURRENT_TAG"]}")
+        param("CURRENT_TAG", "${ProtomathTeamcityPipeline_Proton_Backend_2_Publish.depParamRefs["CURRENT_TAG"]}")
         param("CERT_URL", "http://keycloak/realms/protonmath/protocol/openid-connect/certs")
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {
-        root(AbsoluteId("ProtomathCoreApiGit"))
+        root(ProtomathCoreApiGit)
     }
 
     steps {
@@ -260,28 +283,29 @@ object Proton_Backend_2_Deploy : BuildType({
     }
 
     dependencies {
-        snapshot(Proton_Backend_2_Publish) {
+        snapshot(ProtomathTeamcityPipeline_Proton_Backend_2_Publish) {
             onDependencyFailure = FailureAction.IGNORE
         }
     }
 })
 
-object Proton_Backend_2_Publish : BuildType({
-    templates(BackendTemplate)
+object ProtomathTeamcityPipeline_Proton_Backend_2_Publish : BuildType({
+    templates(ProtomathTeamcityPipeline_BackendTemplate)
+    id("Proton_Backend_2_Publish")
     name = "publish"
 
     buildNumberPattern = "%CURRENT_TAG%"
 
     params {
-        param("BRANCH", "${Proton_Backend_2_Build.depParamRefs["BRANCH"]}")
-        param("CURRENT_TAG", "${Proton_Backend_2_Build.depParamRefs["CURRENT_TAG"]}")
-        param("HEAD_TAG", "${Proton_Backend_2_Build.depParamRefs["HEAD_TAG"]}")
-        param("LAST_TAG", "${Proton_Backend_2_Build.depParamRefs["LAST_TAG"]}")
-        param("SKIP_PUBLISH", "${Proton_Backend_2_Build.depParamRefs["SKIP_PUBLISH"]}")
+        param("BRANCH", "${ProtomathTeamcityPipeline_Proton_Backend_2_Build.depParamRefs["BRANCH"]}")
+        param("CURRENT_TAG", "${ProtomathTeamcityPipeline_Proton_Backend_2_Build.depParamRefs["CURRENT_TAG"]}")
+        param("HEAD_TAG", "${ProtomathTeamcityPipeline_Proton_Backend_2_Build.depParamRefs["HEAD_TAG"]}")
+        param("LAST_TAG", "${ProtomathTeamcityPipeline_Proton_Backend_2_Build.depParamRefs["LAST_TAG"]}")
+        param("SKIP_PUBLISH", "${ProtomathTeamcityPipeline_Proton_Backend_2_Build.depParamRefs["SKIP_PUBLISH"]}")
     }
 
     vcs {
-        root(AbsoluteId("ProtomathCoreApiGit"))
+        root(ProtomathCoreApiGit)
     }
 
     steps {
@@ -332,14 +356,14 @@ object Proton_Backend_2_Publish : BuildType({
         }
         vcsLabeling {
             id = "BUILD_EXT_2"
-            vcsRootId = "ProtomathCoreApiGit"
+            vcsRootId = "${ProtomathCoreApiGit.id}"
             labelingPattern = "%CURRENT_TAG%"
             successfulOnly = true
         }
     }
 
     dependencies {
-        dependency(Proton_Backend_2_Build) {
+        dependency(ProtomathTeamcityPipeline_Proton_Backend_2_Build) {
             snapshot {
                 reuseBuilds = ReuseBuilds.NO
                 onDependencyFailure = FailureAction.FAIL_TO_START
@@ -355,11 +379,12 @@ object Proton_Backend_2_Publish : BuildType({
 })
 
 
-object Proton_Front_2 : Project({
+object ProtomathTeamcityPipeline_Proton_Front_2 : Project({
+    id("Proton_Front_2")
     name = "front"
 
-    buildType(Proton_Front_2_BuildDocker)
-    buildType(Proton_Front_2_DeployKuber)
+    buildType(ProtomathTeamcityPipeline_Proton_Front_2_BuildDocker)
+    buildType(ProtomathTeamcityPipeline_Proton_Front_2_DeployKuber)
 
     features {
         dockerRegistry {
@@ -371,7 +396,8 @@ object Proton_Front_2 : Project({
     }
 })
 
-object Proton_Front_2_BuildDocker : BuildType({
+object ProtomathTeamcityPipeline_Proton_Front_2_BuildDocker : BuildType({
+    id("Proton_Front_2_BuildDocker")
     name = "Build docker"
 
     params {
@@ -418,7 +444,8 @@ object Proton_Front_2_BuildDocker : BuildType({
     }
 })
 
-object Proton_Front_2_DeployKuber : BuildType({
+object ProtomathTeamcityPipeline_Proton_Front_2_DeployKuber : BuildType({
+    id("Proton_Front_2_DeployKuber")
     name = "Deploy kuber"
 
     params {
