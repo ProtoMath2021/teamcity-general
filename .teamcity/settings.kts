@@ -53,7 +53,7 @@ object Proton : Project({
 
 
 object Proton_Backend_2 : Project({
-    name = "backend (1)"
+    name = "backend"
 
     buildType(Proton_Backend_2_Publish)
     buildType(Proton_Backend_2_Deploy)
