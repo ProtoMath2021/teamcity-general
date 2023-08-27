@@ -245,6 +245,7 @@ object Proton_Backend_2_Deploy : BuildType({
 })
 
 object Proton_Backend_2_Publish : BuildType({
+    templates(BackendTemplate)
     name = "publish"
 
     buildNumberPattern = "%CURRENT_TAG%"
@@ -264,6 +265,7 @@ object Proton_Backend_2_Publish : BuildType({
     steps {
         gradle {
             name = "create dockerfile"
+            id = "RUNNER_1"
 
             conditions {
                 equals("SKIP_PUBLISH", "false")
@@ -273,6 +275,7 @@ object Proton_Backend_2_Publish : BuildType({
         }
         dockerCommand {
             name = "build image"
+            id = "RUNNER_2"
 
             conditions {
                 equals("SKIP_PUBLISH", "false")
@@ -286,6 +289,7 @@ object Proton_Backend_2_Publish : BuildType({
         }
         dockerCommand {
             name = "push image"
+            id = "RUNNER_3"
 
             conditions {
                 equals("SKIP_PUBLISH", "false")
@@ -298,12 +302,14 @@ object Proton_Backend_2_Publish : BuildType({
 
     features {
         dockerSupport {
+            id = "BUILD_EXT_1"
             cleanupPushedImages = true
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_3"
             }
         }
         vcsLabeling {
+            id = "BUILD_EXT_2"
             vcsRootId = "ProtomathCoreApiGit"
             labelingPattern = "%CURRENT_TAG%"
             successfulOnly = true
@@ -318,6 +324,7 @@ object Proton_Backend_2_Publish : BuildType({
             }
 
             artifacts {
+                id = "ARTIFACT_DEPENDENCY_1"
                 cleanDestination = true
                 artifactRules = "+:./out/*.* => ./artifact"
             }
