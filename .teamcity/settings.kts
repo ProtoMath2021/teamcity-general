@@ -47,6 +47,13 @@ object BackendTemplate : Template({
 
 object Projectexp : Project({
     name = "projectexp"
+
+    subProject(Projectexp_Backend)
+})
+
+
+object Projectexp_Backend : Project({
+    name = "backend"
 })
 
 
