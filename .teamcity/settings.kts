@@ -216,7 +216,7 @@ object Proton_Backend_2_Deploy : BuildType({
         script {
             name = "deploy helm"
             id = "RUNNER_3"
-            workingDir = ".pipeline/helm/backend-app"
+            workingDir = ".helm"
             scriptContent = """
                 helm upgrade -i --namespace protonmath \
                 	--set app.version=%DEPLOY_TAG% \
