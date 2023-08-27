@@ -127,7 +127,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
 
     params {
         text("CURRENT_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
-        param("SKIP_PUBLISH", "FALSE")
+        param("SKIP_PUBLISH", "false")
     }
 
     vcs {
