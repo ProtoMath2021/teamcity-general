@@ -131,6 +131,19 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
             tasks = "createDockerfile"
             jdkHome = "%env.JDK_17_0%"
         }
+        dockerCommand {
+            name = "build image"
+
+            conditions {
+                equals("SKIP_PUBLISH", "false")
+            }
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+                namesAndTags = "protonmath/proton-backend:%CURRENT_TAG%"
+            }
+        }
     }
 })
 
