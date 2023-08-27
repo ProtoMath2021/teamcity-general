@@ -141,7 +141,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
                 source = file {
                     path = "Dockerfile"
                 }
-                namesAndTags = "projectexp/projectexp-backend:%CURRENT_TAG%"
+                namesAndTags = "protonmath/projectexp-backend:%CURRENT_TAG%"
             }
         }
         dockerCommand {
