@@ -7,7 +7,6 @@ import jetbrains.buildServer.configs.kotlin.buildSteps.kotlinScript
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerRegistry
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
-import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 
 /*
 The settings script is an entry point for defining a TeamCity
@@ -35,22 +34,9 @@ version = "2022.10"
 
 project {
 
-    vcsRoot(GitGithubComProtoMath2021protomathTeamcityPipelineGitRefsHeadsMaster)
-
     subProject(Projectexp)
     subProject(Proton)
 }
-
-object GitGithubComProtoMath2021protomathTeamcityPipelineGitRefsHeadsMaster : GitVcsRoot({
-    name = "git@github.com:ProtoMath2021/protomath-teamcity-pipeline.git#refs/heads/master"
-    url = "git@github.com:ProtoMath2021/protomath-teamcity-pipeline.git"
-    branch = "refs/heads/master"
-    branchSpec = "refs/heads/*"
-    authMethod = uploadedKey {
-        userName = "git"
-        uploadedKey = "teamcity"
-    }
-})
 
 
 object Projectexp : Project({
