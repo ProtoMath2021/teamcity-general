@@ -48,7 +48,6 @@ object Proton : Project({
     name = "proton"
 
     subProject(Proton_Front_2)
-    subProject(Proton_Front)
     subProject(Proton_Backend_2)
 })
 
@@ -313,12 +312,6 @@ object Proton_Backend_2_Publish : BuildType({
             }
         }
     }
-})
-
-
-object Proton_Front : Project({
-    name = "front"
-    archived = true
 })
 
 
