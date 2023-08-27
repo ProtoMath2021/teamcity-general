@@ -34,9 +34,15 @@ version = "2022.10"
 
 project {
 
+    template(BackendTemplate)
+
     subProject(Projectexp)
     subProject(Proton)
 }
+
+object BackendTemplate : Template({
+    name = "backend-template"
+})
 
 
 object Projectexp : Project({
