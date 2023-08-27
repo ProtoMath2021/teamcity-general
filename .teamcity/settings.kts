@@ -154,16 +154,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
                 namesAndTags = "protonmath/proton-backend:%CURRENT_TAG%"
             }
         }
-        dockerCommand {
-            name = "push image (1)"
-
-            conditions {
-                equals("SKIP_PUBLISH", "false")
-            }
-            commandType = push {
-                namesAndTags = "projectexp/projectexp-backend:%CURRENT_TAG%"
-            }
-        }
     }
 })
 
