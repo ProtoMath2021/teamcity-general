@@ -54,6 +54,12 @@ object Projectexp : Project({
 
 object Projectexp_Backend : Project({
     name = "backend"
+
+    buildType(Projectexp_Backend_Build)
+})
+
+object Projectexp_Backend_Build : BuildType({
+    name = "build"
 })
 
 
