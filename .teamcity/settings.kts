@@ -174,6 +174,7 @@ object Proton_Backend_2_Build : BuildType({
 })
 
 object Proton_Backend_2_Deploy : BuildType({
+    templates(BackendTemplate)
     name = "deploy"
 
     enablePersonalBuilds = false
@@ -190,6 +191,7 @@ object Proton_Backend_2_Deploy : BuildType({
     steps {
         kotlinScript {
             name = "check deploy CURRENT_TAG"
+            id = "RUNNER_1"
             content = """
                 val currentTag = "%CURRENT_TAG%"
                 val deployTag = "%DEPLOY_TAG%"
@@ -204,6 +206,7 @@ object Proton_Backend_2_Deploy : BuildType({
         }
         script {
             name = "delete helm release before deploy"
+            id = "RUNNER_2"
             enabled = false
             scriptContent = """
                 helm uninstall backend -n protonmath 2>/dev/null
@@ -212,6 +215,7 @@ object Proton_Backend_2_Deploy : BuildType({
         }
         script {
             name = "deploy helm"
+            id = "RUNNER_3"
             workingDir = ".pipeline/helm/backend-app"
             scriptContent = """
                 helm upgrade -i --namespace protonmath \
@@ -229,6 +233,7 @@ object Proton_Backend_2_Deploy : BuildType({
 
     triggers {
         vcs {
+            id = "TRIGGER_1"
             enabled = false
             branchFilter = """
                 +:<default>
