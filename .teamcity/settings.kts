@@ -173,6 +173,15 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
         }
     }
 
+    features {
+        dockerSupport {
+            cleanupPushedImages = true
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_5"
+            }
+        }
+    }
+
     dependencies {
         dependency(ProtomathTeamcityPipeline_Projectexp_Backend_Build) {
             snapshot {
