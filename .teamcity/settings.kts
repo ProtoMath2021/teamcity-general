@@ -136,6 +136,10 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
     id("Projectexp_Backend_Deploy")
     name = "deploy"
 
+    params {
+        param("CERT_URL", "http://keycloak/realms/protonmath/protocol/openid-connect/certs")
+    }
+
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
