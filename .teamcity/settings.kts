@@ -469,7 +469,7 @@ object ProtomathTeamcityPipeline_Proton_Backend_2_Deploy : BuildType({
 
     params {
         param("CURRENT_TAG", "${ProtomathTeamcityPipeline_Proton_Backend_2_Publish.depParamRefs["CURRENT_TAG"]}")
-        param("CERT_URL", "http://keycloak/realms/protonmath/protocol/openid-connect/certs")
+        param("CERT_URL", "http://auth.devinfra.ru/realms/protonmath/protocol/openid-connect/certs")
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
