@@ -253,10 +253,6 @@ object ProtomathTeamcityPipeline_Projectexp_Front_BuildDocker : BuildType({
         param("DEPLOY_TAG", "v%build.number%")
     }
 
-    vcs {
-        root(ProtomathUiNewGit)
-    }
-
     steps {
         dockerCommand {
             name = "build image"
