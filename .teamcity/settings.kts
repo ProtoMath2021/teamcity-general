@@ -469,8 +469,8 @@ object ProtomathTeamcityPipeline_Proton_Backend_2_Deploy : BuildType({
 
     params {
         param("CURRENT_TAG", "${ProtomathTeamcityPipeline_Proton_Backend_2_Publish.depParamRefs["CURRENT_TAG"]}")
-        param("CERT_URL", "http://keycloak.keycloak/realms/protonmath/protocol/openid-connect/certs")
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
+        param("KEYCLOAK_REALM_CERT_URL", "http://keycloak.keycloak/realms/protonmath/protocol/openid-connect/certs")
     }
 
     vcs {
