@@ -239,6 +239,56 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
 object ProtomathTeamcityPipeline_Projectexp_Front : Project({
     id("Projectexp_Front")
     name = "front"
+
+    buildType(ProtomathTeamcityPipeline_Projectexp_Front_BuildDocker)
+})
+
+object ProtomathTeamcityPipeline_Projectexp_Front_BuildDocker : BuildType({
+    id("Projectexp_Front_BuildDocker")
+    name = "Build docker"
+
+    params {
+        param("teamcity.git.fetchAllHeads", "true")
+        param("DEPLOY_TAG", "v%build.number%")
+    }
+
+    vcs {
+        root(ProtomathUiNewGit)
+    }
+
+    steps {
+        dockerCommand {
+            name = "build image"
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+                namesAndTags = "protonmath/proton-ui:%DEPLOY_TAG%"
+            }
+        }
+        dockerCommand {
+            name = "push image"
+            commandType = push {
+                namesAndTags = "protonmath/proton-ui:%DEPLOY_TAG%"
+                commandArgs = ""
+            }
+        }
+    }
+
+    features {
+        dockerSupport {
+            cleanupPushedImages = true
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_4"
+            }
+        }
+        vcsLabeling {
+            vcsRootId = "${ProtomathUiNewGit.id}"
+            labelingPattern = "%DEPLOY_TAG%"
+            successfulOnly = true
+            branchFilter = "master"
+        }
+    }
 })
 
 
