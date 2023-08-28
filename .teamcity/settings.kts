@@ -703,6 +703,10 @@ object ProtomathTeamcityPipeline_Proton_Front_2_DeployKuber : BuildType({
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = false)
     }
 
+    vcs {
+        root(ProtomathUiNewGit)
+    }
+
     steps {
         script {
             name = "deploy helm"
