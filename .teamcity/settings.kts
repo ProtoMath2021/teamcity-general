@@ -100,6 +100,7 @@ object ProtomathTeamcityPipeline_Projectexp : Project({
     name = "projectexp"
 
     subProject(ProtomathTeamcityPipeline_Projectexp_Backend)
+    subProject(ProtomathTeamcityPipeline_Projectexp_Front)
 })
 
 
@@ -138,8 +139,8 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
 
     params {
         param("db-user", "prexp-db-user")
-        param("db-host", "pg-postgresql")
         param("CERT_URL", "http://keycloak/realms/projectexp/protocol/openid-connect/certs")
+        param("db-host", "pg-postgresql")
         param("db-pass", "dev1231234")
         param("db-port", "5432")
         param("db-name", "prexp")
@@ -232,6 +233,12 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
             }
         }
     }
+})
+
+
+object ProtomathTeamcityPipeline_Projectexp_Front : Project({
+    id("Projectexp_Front")
+    name = "front"
 })
 
 
