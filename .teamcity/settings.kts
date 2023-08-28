@@ -706,7 +706,7 @@ object ProtomathTeamcityPipeline_Proton_Front_2_DeployKuber : BuildType({
     steps {
         script {
             name = "deploy helm"
-            workingDir = "helm/frontend-app"
+            workingDir = ".helm/frontend-app"
             scriptContent = """
                 helm upgrade -i --namespace protonmath \
                     --set app.version=%DEPLOY_TAG% \
