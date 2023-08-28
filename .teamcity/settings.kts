@@ -93,6 +93,7 @@ object ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertFrontendG
         userName = "git"
         uploadedKey = "prexp-front-teamcity"
     }
+    param("secure:password", "")
 })
 
 object ProtomathUiNewGit : GitVcsRoot({
