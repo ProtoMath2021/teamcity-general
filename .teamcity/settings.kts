@@ -138,6 +138,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
 
     params {
         param("CERT_URL", "http://keycloak/realms/protonmath/protocol/openid-connect/certs")
+        param("db-host", "pg-postgresql")
     }
 
     vcs {
