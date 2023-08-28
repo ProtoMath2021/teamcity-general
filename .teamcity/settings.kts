@@ -240,6 +240,7 @@ object ProtomathTeamcityPipeline_Projectexp_Front : Project({
     id("Projectexp_Front")
     name = "front"
 
+    buildType(ProtomathTeamcityPipeline_Projectexp_Front_DeployKuber)
     buildType(ProtomathTeamcityPipeline_Projectexp_Front_BuildDocker)
 })
 
@@ -287,6 +288,31 @@ object ProtomathTeamcityPipeline_Projectexp_Front_BuildDocker : BuildType({
             labelingPattern = "%DEPLOY_TAG%"
             successfulOnly = true
             branchFilter = "master"
+        }
+    }
+})
+
+object ProtomathTeamcityPipeline_Projectexp_Front_DeployKuber : BuildType({
+    id("Projectexp_Front_DeployKuber")
+    name = "Deploy kuber"
+
+    params {
+        param("BASE_URL", "http://protonmath.ru/api")
+        param("AUTH_BASE_URL", "https://auth.protonmath.ru")
+        text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = false)
+    }
+
+    steps {
+        script {
+            name = "deploy helm"
+            workingDir = "helm/frontend-app"
+            scriptContent = """
+                helm upgrade -i --namespace protonmath \
+                    --set app.version=%DEPLOY_TAG% \
+                    --set app.baseUrl=%BASE_URL% \
+                    --set app.authBaseUrl=%AUTH_BASE_URL% \
+                	frontend .
+            """.trimIndent()
         }
     }
 })
