@@ -293,7 +293,7 @@ object ProtomathTeamcityPipeline_Projectexp_Front_BuildDocker : BuildType({
         dockerSupport {
             cleanupPushedImages = true
             loginToRegistry = on {
-                dockerRegistryId = "PROJECT_EXT_4"
+                dockerRegistryId = "PROJECT_EXT_5"
             }
         }
         vcsLabeling {
