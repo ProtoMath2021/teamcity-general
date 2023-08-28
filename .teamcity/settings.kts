@@ -36,6 +36,7 @@ version = "2022.10"
 project {
 
     vcsRoot(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
+    vcsRoot(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertFrontendGit)
     vcsRoot(ProtomathUiNewGit)
     vcsRoot(ProtomathCoreApiGit)
 
@@ -81,6 +82,17 @@ object ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGi
         uploadedKey = "prexp-back-teamcity"
     }
     param("secure:password", "")
+})
+
+object ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertFrontendGit : GitVcsRoot({
+    id("GitGithubComProtoMath2021projectExpertFrontendGit")
+    name = "git@github.com:ProtoMath2021/project-expert-frontend.git"
+    url = "git@github.com:ProtoMath2021/project-expert-frontend.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "prexp-front-teamcity"
+    }
 })
 
 object ProtomathUiNewGit : GitVcsRoot({
