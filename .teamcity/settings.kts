@@ -137,12 +137,13 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
     name = "deploy"
 
     params {
-        param("db-pass", "dev1231234")
-        param("db-port", "5432")
         param("db-user", "prexp-db-user")
         param("CERT_URL", "http://keycloak/realms/protonmath/protocol/openid-connect/certs")
         param("db-host", "pg-postgresql")
+        param("db-pass", "dev1231234")
+        param("db-port", "5432")
         param("db-name", "prexp")
+        text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {
