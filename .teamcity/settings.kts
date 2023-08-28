@@ -266,6 +266,10 @@ object ProtomathTeamcityPipeline_Projectexp_Front_BuildDocker : BuildType({
         param("DEPLOY_TAG", "v%build.number%")
     }
 
+    vcs {
+        root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertFrontendGit)
+    }
+
     steps {
         dockerCommand {
             name = "build image"
