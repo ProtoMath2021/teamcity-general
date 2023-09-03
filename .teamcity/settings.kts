@@ -135,7 +135,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     publishArtifacts = PublishMode.SUCCESSFUL
 
     params {
-        param("env.GH_TOKEN_PROJEXP", "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")
+        param("env.GH_TOKEN", "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")
     }
 
     vcs {
