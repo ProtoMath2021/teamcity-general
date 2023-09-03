@@ -152,7 +152,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     features {
         vcsLabeling {
             vcsRootId = "${ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit.id}"
-            labelingPattern = "%env.TEAMCITY_PROJECT_NAME%-%system.build.number%"
+            labelingPattern = "%env.TEAMCITY_PROJECT_NAME%-%build.vcs.number%"
             branchFilter = ""
         }
     }
