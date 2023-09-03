@@ -160,7 +160,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 
                 echo HELP 
                 echo ${'$'}{GITHUB_TOKEN}
-                GH_TOKEN=${'$'}{GITHUB_TOKEN} npx semantic-release --no-ci
+                GH_TOKEN=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 npx semantic-release --no-ci
             """.trimIndent()
         }
     }
