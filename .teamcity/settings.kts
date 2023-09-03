@@ -144,7 +144,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     publishArtifacts = PublishMode.SUCCESSFUL
 
     params {
-        param("env.GITHUB_TOKEN", """${'$'}{DslContext.getParameter("GITHUB_TOKEN", "Test Build")}""")
+        param("env.GITHUB_TOKEN", "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")
     }
 
     vcs {
