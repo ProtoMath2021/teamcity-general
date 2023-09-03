@@ -142,7 +142,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
         gradle {
             tasks = "clean build"
             jdkHome = "%env.JDK_17_0%"
-            jvmArgs = "--packageversion %build.number%"
         }
     }
 
