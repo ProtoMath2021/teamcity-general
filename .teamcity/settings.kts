@@ -148,6 +148,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             name = "build"
             shellScript = """
                 npm install
+                npm install --save-dev gradle-semantic-release-plugin
                 npx semantic-release --no-ci
             """.trimIndent()
         }
