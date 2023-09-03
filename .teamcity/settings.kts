@@ -142,13 +142,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     artifactRules = "+:out => out"
     publishArtifacts = PublishMode.SUCCESSFUL
 
-    params {
-        param("env.GH_TOKEN", """
-            'DslContext.getParameter(
-            GH_TOKEN, defaultValue)'
-        """.trimIndent())
-    }
-
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
