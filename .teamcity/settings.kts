@@ -151,6 +151,9 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
                 git config --global --add safe.directory "${'$'}(pwd)"
+                ssh-keygen -R github.com
+                ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+                
                 
                 echo HELP 
                 echo %build.number%
