@@ -132,7 +132,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     name = "build"
 
     artifactRules = "+:out => out"
-    buildNumberPattern = "%build.number%"
     publishArtifacts = PublishMode.SUCCESSFUL
 
     vcs {
