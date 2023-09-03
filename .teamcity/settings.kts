@@ -141,7 +141,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
 
     steps {
         gradle {
-            tasks = "clean build -x test"
+            tasks = "clean build"
             jdkHome = "%env.JDK_17_0%"
         }
     }
