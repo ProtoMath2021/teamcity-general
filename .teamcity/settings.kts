@@ -144,6 +144,14 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             jdkHome = "%env.JDK_17_0%"
         }
     }
+
+    features {
+        vcsLabeling {
+            vcsRootId = "${ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit.id}"
+            labelingPattern = "%env.TEAMCITY_PROJECT_NAME%-%system.build.number%"
+            branchFilter = ""
+        }
+    }
 })
 
 object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
