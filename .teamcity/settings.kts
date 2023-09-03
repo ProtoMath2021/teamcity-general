@@ -157,7 +157,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo %env.GH_TOKEN%
                 echo "`pwd`" 
                 echo "`ls -la`"
-                GH_TOKEN=%env.GH_TOKEN% npx semantic-release --debug
+                npx semantic-release --debug
             """.trimIndent()
         }
     }
