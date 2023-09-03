@@ -152,6 +152,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             shellScript = """
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
+                npx semantic-release
             """.trimIndent()
         }
     }
