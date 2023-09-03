@@ -154,6 +154,13 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 npx semantic-release --no-ci
             """.trimIndent()
         }
+        script {
+            name = "clone"
+            scriptContent = """
+                git clone https://github.com/ProtoMath2021/project-expert-backend.git
+                cd project-expert-backend
+            """.trimIndent()
+        }
     }
 
     features {
