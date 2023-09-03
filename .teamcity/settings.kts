@@ -147,7 +147,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
         nodeJS {
             name = "build"
             shellScript = """
-                yarn install
+                npm clean-install
                 npx semantic-release --no-ci
             """.trimIndent()
         }
