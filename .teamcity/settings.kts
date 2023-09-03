@@ -144,7 +144,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             name = "build"
             shellScript = """
                 npm install
-                npx semantic-release --no-ci --repository-url=https://github.com/ProtoMath2021/project-expert-backend.git
+                GH_TOKEN=DslContext.getParameter(GH_TOKEN, 1) npx semantic-release --no-ci --repository-url=https://github.com/ProtoMath2021/project-expert-backend.git
             """.trimIndent()
         }
     }
