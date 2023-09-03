@@ -131,7 +131,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend : Project({
     buildType(ProtomathTeamcityPipeline_Projectexp_Backend_Publish)
 
     params {
-        param("env.GITHUB_TOKEN", """DslContext.getParameter("GITHUB_TOKEN", "Test Build")""")
         password("env.GH_TOKEN", "zxx1e5189c7c59a66eda38106bb6c265972872bd8f1365742cd9da869dac1777a88f37ecede81bcd73b775d03cbe80d301b", label = "GITHUB_TOKEN")
     }
     buildTypesOrder = arrayListOf(ProtomathTeamcityPipeline_Projectexp_Backend_Build, ProtomathTeamcityPipeline_Projectexp_Backend_Publish, ProtomathTeamcityPipeline_Projectexp_Backend_Deploy)
