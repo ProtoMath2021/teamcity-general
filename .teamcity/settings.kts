@@ -146,7 +146,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     steps {
         nodeJS {
             name = "build"
-            shellScript = "npx semantic-release"
+            shellScript = "GH_TOKEN=%env.GH_TOKEN% npx semantic-release --no-ci"
         }
     }
 
