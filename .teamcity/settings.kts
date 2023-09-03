@@ -113,10 +113,6 @@ object ProtomathTeamcityPipeline_Projectexp : Project({
     id("Projectexp")
     name = "projectexp"
 
-    params {
-        param("env.GITHUB_TOKEN", """${'$'}{DslContext.getParameter("GITHUB_TOKEN", "Test Build")""")
-    }
-
     subProject(ProtomathTeamcityPipeline_Projectexp_Backend)
     subProject(ProtomathTeamcityPipeline_Projectexp_Front)
 })
