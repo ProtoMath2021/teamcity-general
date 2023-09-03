@@ -150,6 +150,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
         script {
             name = "clone"
             scriptContent = """
+                ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
                 git clone git@github.com:ProtoMath2021/project-expert-backend.git
                 cd project-expert-backend
             """.trimIndent()
