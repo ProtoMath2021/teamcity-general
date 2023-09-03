@@ -155,6 +155,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo HELP 
                 echo %build.number%
                 echo %env.GH_TOKEN%
+                echo "`ls -l`"
                 GH_TOKEN=%env.GH_TOKEN% npx semantic-release --no-ci --debug
             """.trimIndent()
         }
