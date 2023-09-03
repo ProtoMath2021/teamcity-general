@@ -143,10 +143,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     artifactRules = "+:out => out"
     publishArtifacts = PublishMode.SUCCESSFUL
 
-    params {
-        param("env.GITHUB_TOKEN", "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")
-    }
-
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
