@@ -159,8 +159,8 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 npm install @semantic-release/git @semantic-release/changelog -D
                 
                 echo HELP 
-                echo ${'$'}{%build.number%}
-                echo ${'$'}{%env.GITHUB_TOKEN%}
+                echo %build.number%
+                echo %env.GITHUB_TOKEN%
                 npx semantic-release --no-ci
             """.trimIndent()
         }
