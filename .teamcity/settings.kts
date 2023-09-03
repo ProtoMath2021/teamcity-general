@@ -144,6 +144,10 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     artifactRules = "+:out => out"
     publishArtifacts = PublishMode.SUCCESSFUL
 
+    params {
+        param("env.GITHUB_TOKEN", """DslContext.getParameter("GITHUB_TOKEN", "Test Build")""")
+    }
+
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
