@@ -215,6 +215,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
     name = "publish"
 
     params {
+        param("CURRENT_TAG", "%build.vcs.number%")
         param("SKIP_PUBLISH", "false")
     }
 
