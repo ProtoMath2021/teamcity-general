@@ -155,8 +155,8 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 npm install @semantic-release/git @semantic-release/changelog -D
                 
                 echo HELP 
-                echo ${'$'}{%env.GITHUB_TOKEN%}
-                GH_TOKEN=${'$'}{%env.GITHUB_TOKEN%} npx semantic-release --no-ci
+                echo ${'$'}{GITHUB_TOKEN}
+                GH_TOKEN=${'$'}{GITHUB_TOKEN} npx semantic-release --no-ci
             """.trimIndent()
         }
     }
