@@ -150,6 +150,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
+                git config --global --add safe.directory /opt/buildagent/work/d0ffd19b01139e20
                 
                 
                 echo HELP 
