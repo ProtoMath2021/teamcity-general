@@ -233,6 +233,11 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
                 dockerRegistryId = "PROJECT_EXT_5"
             }
         }
+        vcsLabeling {
+            vcsRootId = "${ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit.id}"
+            labelingPattern = "%env.TEAMCITY_PROJECT_NAME%-%system.build.number%"
+            branchFilter = ""
+        }
     }
 
     dependencies {
