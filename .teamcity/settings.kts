@@ -4,6 +4,7 @@ import jetbrains.buildServer.configs.kotlin.buildFeatures.vcsLabeling
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.buildSteps.kotlinScript
+import jetbrains.buildServer.configs.kotlin.buildSteps.nodeJS
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerRegistry
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
@@ -143,9 +144,12 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     }
 
     steps {
-        gradle {
+        nodeJS {
             name = "build"
-            jdkHome = "%env.JDK_17_0%"
+            shellScript = """
+                npm install
+                npx semantic-release --no-ci
+            """.trimIndent()
         }
     }
 
