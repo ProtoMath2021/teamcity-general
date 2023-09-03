@@ -147,10 +147,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     }
 
     steps {
-        gradle {
-            name = "build"
-            jdkHome = "%env.JDK_17_0%"
-        }
         nodeJS {
             shellScript = """
                 npm install
