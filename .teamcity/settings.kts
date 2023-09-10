@@ -732,7 +732,7 @@ object ProtomathTeamcityPipeline_Proton_Front_2_DeployKuber : BuildType({
 
     params {
         param("BASE_URL", "http://protonmath.ru/api")
-        param("AUTH_BASE_URL", "http://auth.devinfra.ru")
+        param("AUTH_BASE_URL", "https://auth.devinfra.ru")
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = false)
     }
 
