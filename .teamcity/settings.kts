@@ -174,10 +174,10 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 git fetch --tags
                 latest_tag=${'$'}(git describe --tags `git rev-list --tags --max-count=1`)
                 echo "${'$'}latest_tag"
-                echo "HELP"
+                echo "setVer  HELP1"
                 # Set a build parameter using a service message
                 echo "##teamcity[setParameter name='env.CURRENT_TAG_EXPERT' value='${'$'}latest_tag']"
-                echo "HELP"
+                echo "setVer  HELP2"
             """.trimIndent()
         }
         gradle {
