@@ -190,6 +190,9 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             scriptContent = """
                 echo "`ls -la ./out/`"
                 mv ./out/*.jar ./out/amogus-%env.CURRENT_TAG_EXPERT%
+                
+                find ./out -name '*.jar' -type f -delete
+                echo "`ls -la ./out/`"
             """.trimIndent()
         }
     }
