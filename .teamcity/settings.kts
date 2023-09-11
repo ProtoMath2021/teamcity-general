@@ -186,6 +186,9 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             tasks = "clean assemble"
             jdkHome = "%env.JDK_17_0%"
         }
+        script {
+            scriptContent = "echo 'ls -la'"
+        }
     }
 
     features {
