@@ -189,6 +189,12 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
         script {
             scriptContent = "echo 'ls -la'"
         }
+        script {
+            scriptContent = """
+                echo "`ls -la`"
+                echo "`ls -la ./out/`"
+            """.trimIndent()
+        }
     }
 
     features {
