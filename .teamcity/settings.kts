@@ -172,6 +172,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 latest_tag=${'$'}(git describe --tags `git rev-list --tags --max-count=1`)
                 git checkout ${'$'}latest_tag
                 ./gradlew build
+                echo "`ls -la ./out`"
                 mv ./out/*.jar "amogus-${'$'}latest_tag.jar"
             """.trimIndent()
         }
