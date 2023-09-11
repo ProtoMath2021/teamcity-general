@@ -181,7 +181,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             """.trimIndent()
         }
         gradle {
-            name = "git check"
+            name = "build"
             tasks = "clean assemble"
             jdkHome = "%env.JDK_17_0%"
         }
