@@ -151,7 +151,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
                 git config --global --add safe.directory "${'$'}(pwd)"
-                npm install gradle --save-dev
                 
                 echo HELP 
                 echo %build.number%
@@ -160,6 +159,8 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo "`ls -la`"
                 echo "`ls -la .git/`"
                 npx semantic-release --debug --no-ci
+                
+                echo "`ls -la`"
             """.trimIndent()
         }
     }
