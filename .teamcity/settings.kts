@@ -139,6 +139,10 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     artifactRules = "+:out => out"
     publishArtifacts = PublishMode.SUCCESSFUL
 
+    params {
+        param("env.CURRENT_TAG_EXPERT", "")
+    }
+
     vcs {
         root(ProtomathTeamcityPipeline_GitGithubComProtoMath2021projectExpertBackendGit)
     }
