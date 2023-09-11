@@ -177,7 +177,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo "${'$'}latest_tag"
                 echo "HELP"
                 echo "##teamcity[setParameter name='env.CURRENT_TAG_EXPERT' value='${'$'}latest_tag']"
-                echo "%env.CURRENT_TAG_EXPERT%"
+                echo "The value of MY_VARIABLE is %env.CURRENT_TAG_EXPERT%"
                 echo "HELP"
             """.trimIndent()
         }
