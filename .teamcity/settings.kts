@@ -196,8 +196,8 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 mv ./out/*.jar ./out/amogus-%CURRENT_TAG_EXPERT%.jar
                 echo "`ls -la ./out/`"
                 echo "is renamed?"
+                find /path/to/directory -type f ! -name "*.jar" -exec rm {} \;
                 
-                find ./out -name '*.jar' -type f -delete
                 echo "`ls -la ./out/`"
             """.trimIndent()
         }
