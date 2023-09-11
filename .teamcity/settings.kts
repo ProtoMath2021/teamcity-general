@@ -181,6 +181,10 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo "HELP"
             """.trimIndent()
         }
+        script {
+            name = "git check"
+            scriptContent = """echo "The value of MY_VARIABLE is %env.CURRENT_TAG_EXPERT%""""
+        }
     }
 
     features {
