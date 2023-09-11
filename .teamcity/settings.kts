@@ -174,7 +174,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             scriptContent = """
                 echo "`ls -la`"
                 git fetch --tags
-                latest_tag=${'$'}(git describe --tags `git rev-list --tags --max-count=1`)
+                latest_tag=${'$'}(git describe --tags --abbrev=0 ${'$'}(git tag --sort=version:refname | tail -n 1))
                 echo "${'$'}latest_tag"
                 echo "setVer  HELP1"
                 # Set a build parameter using a service message
