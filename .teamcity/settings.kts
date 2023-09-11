@@ -179,7 +179,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo "setVer  HELP1"
                 # Set a build parameter using a service message
                 echo "##teamcity[setParameter name='CURRENT_TAG_EXPERT' value='${'$'}latest_tag']"
-                echo "setVer  HELP2"
+                echo "setVer HELP2"
             """.trimIndent()
         }
         gradle {
