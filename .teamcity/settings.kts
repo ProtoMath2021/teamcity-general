@@ -162,6 +162,8 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo "`pwd`" 
                 echo "`ls -la`"
                 echo "`ls -la .git/`"
+                echo "getVer" 
+                
                 npx semantic-release --debug --no-ci
                 
                 echo "`ls -la`"
