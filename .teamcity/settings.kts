@@ -175,6 +175,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 git fetch --tags
                 latest_tag=${'$'}(git describe --tags `git rev-list --tags --max-count=1`)
                 println("##teamcity[setParameter name='CURRENT_TAG_EXPERT' value='${'$'}latest_ta']")
+                echo %CURRENT_TAG_EXPERT%
             """.trimIndent()
         }
     }
