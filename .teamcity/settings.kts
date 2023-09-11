@@ -145,7 +145,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
 
     steps {
         nodeJS {
-            name = "node"
+            name = "getVer"
             shellScript = """
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
@@ -159,7 +159,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo "`pwd`" 
                 echo "`ls -la`"
                 echo "`ls -la .git/`"
-                npx semantic-release --debug
+                npx semantic-release --debug --no-ci
             """.trimIndent()
         }
     }
