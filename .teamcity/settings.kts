@@ -146,6 +146,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
     steps {
         nodeJS {
             name = "getVer"
+            enabled = false
             shellScript = """
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
