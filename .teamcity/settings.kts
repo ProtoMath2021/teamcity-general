@@ -249,6 +249,11 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
             """.trimIndent()
         }
     }
+
+    dependencies {
+        snapshot(ProtomathTeamcityPipeline_Projectexp_Backend_Publish) {
+        }
+    }
 })
 
 object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
