@@ -186,6 +186,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             jdkHome = "%env.JDK_17_0%"
         }
         script {
+            name = "rename jar"
             scriptContent = """
                 echo "`ls -la ./out/`"
                 mv ./out/*.jar ./out/amogus-%env.CURRENT_TAG_EXPERT%.jar
