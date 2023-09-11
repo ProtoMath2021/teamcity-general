@@ -169,7 +169,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             """.trimIndent()
         }
         script {
-            name = "git clone"
+            name = "setVer"
             scriptContent = """
                 echo "`ls -la`"
                 git fetch --tags
