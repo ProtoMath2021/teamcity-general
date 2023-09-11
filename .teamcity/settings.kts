@@ -174,11 +174,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo "`ls -la`"
                 git fetch --tags
                 latest_tag=${'$'}(git describe --tags `git rev-list --tags --max-count=1`)
-                git checkout ${'$'}latest_tag
-                ./gradlew build
-                
-                mv ./out/*.jar "amogus-${'$'}latest_tag.jar"
-                echo "`ls -la`"
+                println("##teamcity[setParameter name='CURRENT_TAG_EXPERT' value='${'$'}latest_ta']")
             """.trimIndent()
         }
     }
