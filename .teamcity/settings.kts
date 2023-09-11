@@ -168,17 +168,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             name = "git clone"
             scriptContent = """echo "`ls -la`""""
         }
-        script {
-            name = "git clone (1)"
-            scriptContent = """
-                echo "`ls -la`"
-                git fetch --tags
-                latest_tag=${'$'}(git describe --tags `git rev-list --tags --max-count=1`)
-                git checkout ${'$'}latest_tag
-                ./gradlew build
-                mv ./out/*.jar "amogus-${'$'}latest_tag.jar"
-            """.trimIndent()
-        }
     }
 
     features {
