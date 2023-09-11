@@ -181,7 +181,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 echo "##teamcity[setParameter name='CURRENT_TAG_EXPERT' value='${'$'}latest_tag']"
                 echo "setVer HELP2"
                 
-                echo "`ls -la` ./out"
+                find ./out -type f -name "*.jar" -exec rm {} \;
             """.trimIndent()
         }
         gradle {
