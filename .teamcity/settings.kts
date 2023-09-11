@@ -166,10 +166,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
         }
         script {
             name = "git clone"
-            scriptContent = """
-                git clone git@github.com:ProtoMath2021/project-expert-backend.git
-                cd project-expert-backend
-            """.trimIndent()
+            scriptContent = """echo "`ls -la`""""
         }
     }
 
