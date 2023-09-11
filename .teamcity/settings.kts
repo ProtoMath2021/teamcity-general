@@ -192,8 +192,8 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
             scriptContent = """
                 echo "`ls -la ./out/`"
                 echo "HELP renameJar"
-                echo "%env.CURRENT_TAG_EXPERT%"
-                mv ./out/*.jar ./out/amogus-%env.CURRENT_TAG_EXPERT%.jar
+                echo "%CURRENT_TAG_EXPERT%"
+                mv ./out/*.jar ./out/amogus-%CURRENT_TAG_EXPERT%.jar
                 
                 find ./out -name '*.jar' -type f -delete
                 echo "`ls -la ./out/`"
