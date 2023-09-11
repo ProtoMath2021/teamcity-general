@@ -174,7 +174,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
                 ./gradlew build
                 
                 mv ./out/*.jar "amogus-${'$'}latest_tag.jar"
-                echo "`ls -la ./out`"
+                echo "`ls -la`"
             """.trimIndent()
         }
     }
