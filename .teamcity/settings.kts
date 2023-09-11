@@ -289,7 +289,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Publish : BuildType({
                 equals("SKIP_PUBLISH", "false")
             }
             commandType = push {
-                namesAndTags = "protonmath/projectexp-backend:%CURRENT_TAG%"
+                namesAndTags = "protonmath/projectexp-backend:${ProtomathTeamcityPipeline_Projectexp_Backend_Build.depParamRefs["CURRENT_TAG_EXPERT"]}"
             }
         }
     }
