@@ -141,7 +141,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Build : BuildType({
 
     params {
         param("CURRENT_TAG_EXPERT", "")
-        param("env.CURRENT_TAG_EXPERT", "123")
     }
 
     vcs {
