@@ -225,7 +225,6 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
         param("db-pass", "dev1231234")
         param("db-port", "5432")
         param("db-name", "prexp")
-        text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {
