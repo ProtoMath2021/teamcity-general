@@ -237,7 +237,7 @@ object ProtomathTeamcityPipeline_Projectexp_Backend_Deploy : BuildType({
             name = "deploy helm"
             workingDir = ".helm"
             scriptContent = """
-                helm upgrade -i --namespace protonmath \
+                helm upgrade -i --namespace projectexp \
                 	--set app.version=%DEPLOY_TAG% \
                     --set database.host=%db-host% \
                     --set database.port=%db-port% \
