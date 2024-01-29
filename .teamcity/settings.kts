@@ -388,8 +388,8 @@ object ProtomathTeamcityPipeline_Projectexp_Front_DeployKuber : BuildType({
     name = "Deploy kuber"
 
     params {
-        param("BASE_URL", "http://protonmath.ru/api")
-        param("AUTH_BASE_URL", "https://auth.protonmath.ru")
+        param("BASE_URL", "http://testinfra.online/api")
+        param("AUTH_BASE_URL", "https://auth.devinfra.ru")
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = false)
     }
 
@@ -777,7 +777,7 @@ object ProtomathTeamcityPipeline_Proton_Front_2_DeployKuber : BuildType({
     name = "Deploy kuber"
 
     params {
-        param("BASE_URL", "https://protonmath.ru/api")
+        param("BASE_URL", "https://testinfra.online/api")
         param("AUTH_BASE_URL", "https://auth.devinfra.ru")
         text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = false)
     }
