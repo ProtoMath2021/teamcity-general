@@ -428,9 +428,9 @@ object ProtomathTeamcityPipeline_Proton_Backend_2 : Project({
 
     params {
         password("db-pass", "zxxa604baaec7c27caf057cd168a37737e8", display = ParameterDisplay.HIDDEN)
-        text("db-port", "5432", label = "db", description = "db", readOnly = true, allowEmpty = true)
-        param("db-user", "db-user")
-        param("db-host", "pg-postgresql")
+        text("db-port", "54322", label = "db", description = "db", readOnly = true, allowEmpty = true)
+        param("db-user", "proton-db-user")
+        param("db-host", "192.168.0.200")
         param("db-name", "proton")
     }
 
