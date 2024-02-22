@@ -11,4 +11,5 @@ object ProtonMath_Frontend_StudentUi_GitGithubComProtoMath2021protomathStudentUi
         userName = "git"
         uploadedKey = "proton-front-student-ui"
     }
+    param("secure:password", "")
 })
