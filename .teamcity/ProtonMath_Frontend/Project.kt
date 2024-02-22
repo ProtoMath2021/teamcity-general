@@ -8,4 +8,5 @@ object Project : Project({
     name = "Frontend"
 
     subProject(ProtonMath_Frontend_StudentUi.Project)
+    subProject(ProtonMath_Frontend_TeacherUi.Project)
 })
