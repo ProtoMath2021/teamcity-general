@@ -111,6 +111,7 @@ object ProtonMath_Backend_Build : BuildType({
                 
                 echo "`ls -la`"
             """.trimIndent()
+            dockerPull = true
         }
     }
 })
