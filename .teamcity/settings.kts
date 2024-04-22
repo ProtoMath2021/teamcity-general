@@ -1,5 +1,6 @@
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.projectFeatures.buildReportTab
+import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerRegistry
 
 /*
 The settings script is an entry point for defining a TeamCity
@@ -41,4 +42,20 @@ project {
             preventDependencyCleanup = false
         }
     }
+
+    subProject(ProtonMath)
 }
+
+
+object ProtonMath : Project({
+    name = "ProtonMath"
+
+    features {
+        dockerRegistry {
+            id = "PROJECT_EXT_11"
+            name = "Docker Registry"
+            userName = "protonmath"
+            password = "zxx5e244335597ac1e30345c418695c01fe083c51d26ee56b10396789d1aa194f59a07c29f646e3eb09"
+        }
+    }
+})
