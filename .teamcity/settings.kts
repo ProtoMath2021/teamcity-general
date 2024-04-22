@@ -1,6 +1,12 @@
 import jetbrains.buildServer.configs.kotlin.*
+import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerSupport
+import jetbrains.buildServer.configs.kotlin.buildFeatures.vcsLabeling
+import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
+import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.projectFeatures.buildReportTab
 import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerRegistry
+import jetbrains.buildServer.configs.kotlin.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 
 /*
 The settings script is an entry point for defining a TeamCity
@@ -57,5 +63,206 @@ object ProtonMath : Project({
             userName = "protonmath"
             password = "zxx5e244335597ac1e30345c418695c01fe083c51d26ee56b10396789d1aa194f59a07c29f646e3eb09"
         }
+    }
+
+    subProject(ProtonMath_Frontend)
+})
+
+
+object ProtonMath_Frontend : Project({
+    name = "Frontend"
+
+    subProject(ProtonMath_Frontend_StudentUi)
+    subProject(ProtonMath_Frontend_TeacherUi)
+})
+
+
+object ProtonMath_Frontend_StudentUi : Project({
+    name = "student-ui"
+
+    vcsRoot(ProtonMath_Frontend_StudentUi_GitGithubComProtoMath2021protomathStudentUiGit)
+
+    buildType(ProtonMath_Frontend_StudentUi_Build)
+})
+
+object ProtonMath_Frontend_StudentUi_Build : BuildType({
+    name = "build"
+
+    params {
+        param("env.KEYCLOAK_ISSUER", "https://auth.devinfra.ru/realms/protonmath")
+        param("env.KEYCLOAK_REFRESH_TOKEN_URL", "https://auth.devinfra.ru/realms/protonmath/protocol/openid-connect/token")
+        password("env.KEYCLOAK_CLIENT_SECRET", "zxxb1ef4e8195fe8dfbe37e9d5f92fdc63da6b2025e57cb2acec22934181b107177775d03cbe80d301b")
+        param("env.NEXTAUTH_URL", "https://student.testinfra.online")
+        password("env.NEXTAUTH_SECRET", "zxx90fd640ddc84feb3bae26bf487de1654")
+        password("env.CRYPT_KEY", "zxx90fd640ddc84feb3bae26bf487de1654")
+        param("env.END_SESSION_URL", "https://auth.devinfra.ru/realms/protonmath/protocol/openid-connect/logout")
+        param("env.KEYCLOAK_CLIENT_ID", "student.protonmath.ru")
+        param("BASE_URL", "TODO")
+        param("AUTH_BASE_URL", "TODO")
+        param("DEPLOY_TAG", "v%build.number%")
+    }
+
+    vcs {
+        root(ProtonMath_Frontend_StudentUi_GitGithubComProtoMath2021protomathStudentUiGit)
+    }
+
+    steps {
+        dockerCommand {
+            name = "build"
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+                namesAndTags = "protonmath/proton-student-ui:%DEPLOY_TAG%"
+            }
+        }
+        dockerCommand {
+            name = "publish"
+            commandType = push {
+                namesAndTags = "protonmath/proton-student-ui:%DEPLOY_TAG%"
+            }
+        }
+        script {
+            name = "deploy"
+            workingDir = ".helm"
+            scriptContent = """
+                helm upgrade -i --namespace protonmath \
+                                    --set app.version=%DEPLOY_TAG% \
+                                    --set app.baseUrl=%BASE_URL% \
+                                    --set app.authBaseUrl=%AUTH_BASE_URL% \
+                                    --set app.keycloakClientId=%env.KEYCLOAK_CLIENT_ID% \
+                                    --set app.keycloakClientSecret=%env.KEYCLOAK_CLIENT_SECRET% \
+                                    --set app.keycloakIssuer=%env.KEYCLOAK_ISSUER% \
+                                    --set app.keycloakRefreshTokenUrl=%env.KEYCLOAK_REFRESH_TOKEN_URL% \
+                                    --set app.nextAuthUrl=%env.NEXTAUTH_URL% \
+                                    --set app.endSessionUrl=%env.END_SESSION_URL% \
+                                    --set app.nextAuthSecret=%env.NEXTAUTH_SECRET% \
+                                    --set app.cryptKey=%env.CRYPT_KEY% \
+                                	student-frontend .
+            """.trimIndent()
+        }
+    }
+
+    triggers {
+        vcs {
+            triggerRules = """
+                +:root=${ProtonMath_Frontend_StudentUi_GitGithubComProtoMath2021protomathStudentUiGit.id}:**
+                +:refs/head/master
+            """.trimIndent()
+
+            branchFilter = ""
+        }
+    }
+
+    features {
+        dockerSupport {
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_11"
+            }
+        }
+    }
+})
+
+object ProtonMath_Frontend_StudentUi_GitGithubComProtoMath2021protomathStudentUiGit : GitVcsRoot({
+    name = "git@github.com:ProtoMath2021/protomath-student-ui.git"
+    url = "git@github.com:ProtoMath2021/protomath-student-ui.git"
+    branch = "refs/heads/main"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "proton-front-student-ui"
+    }
+    param("secure:password", "")
+})
+
+
+object ProtonMath_Frontend_TeacherUi : Project({
+    name = "teacher-ui"
+
+    vcsRoot(ProtonMath_Frontend_TeacherUi_GitGithubComProtoMath2021protomathUiNewGit)
+
+    buildType(ProtonMath_Frontend_TeacherUi_BuildDocker)
+    buildType(ProtonMath_Frontend_TeacherUi_Deploy)
+})
+
+object ProtonMath_Frontend_TeacherUi_BuildDocker : BuildType({
+    name = "build_docker"
+
+    params {
+        param("DEPLOY_TAG", "v%build.number%")
+    }
+
+    vcs {
+        root(ProtonMath_Frontend_TeacherUi_GitGithubComProtoMath2021protomathUiNewGit)
+    }
+
+    steps {
+        dockerCommand {
+            name = "build image"
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+                namesAndTags = "protonmath/proton-ui:%DEPLOY_TAG%"
+            }
+        }
+        dockerCommand {
+            name = "push image"
+            commandType = push {
+                namesAndTags = "protonmath/proton-ui:%DEPLOY_TAG%"
+            }
+        }
+    }
+
+    features {
+        dockerSupport {
+            cleanupPushedImages = true
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_11"
+            }
+        }
+        vcsLabeling {
+            vcsRootId = "${ProtonMath_Frontend_TeacherUi_GitGithubComProtoMath2021protomathUiNewGit.id}"
+            labelingPattern = "%DEPLOY_TAG%"
+            successfulOnly = true
+            branchFilter = ""
+        }
+    }
+})
+
+object ProtonMath_Frontend_TeacherUi_Deploy : BuildType({
+    name = "deploy"
+
+    params {
+        param("BASE_URL", "https://testinfra.online/api")
+        param("AUTH_BASE_URL", "https://auth.devinfra.ru")
+        text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
+    }
+
+    vcs {
+        root(ProtonMath_Frontend_TeacherUi_GitGithubComProtoMath2021protomathUiNewGit)
+    }
+
+    steps {
+        script {
+            name = "deply helm"
+            workingDir = ".helm"
+            scriptContent = """
+                helm upgrade -i --namespace protonmath \
+                                    --set app.version=%DEPLOY_TAG% \
+                                    --set app.baseUrl=%BASE_URL% \
+                                    --set app.authBaseUrl=%AUTH_BASE_URL% \
+                                	frontend .
+            """.trimIndent()
+        }
+    }
+})
+
+object ProtonMath_Frontend_TeacherUi_GitGithubComProtoMath2021protomathUiNewGit : GitVcsRoot({
+    name = "git@github.com:ProtoMath2021/protomath-ui-new.git"
+    url = "git@github.com:ProtoMath2021/protomath-ui-new.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "proton-front-teamcity"
     }
 })
