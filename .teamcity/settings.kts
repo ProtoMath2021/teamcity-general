@@ -66,6 +66,34 @@ object ProtonMath : Project({
     }
 
     subProject(ProtonMath_Frontend)
+    subProject(ProtonMath_Backend)
+})
+
+
+object ProtonMath_Backend : Project({
+    name = "Backend"
+
+    vcsRoot(ProtonMath_Backend_GitGithubComProtoMath2021protomathCoreApiGit)
+
+    buildType(ProtonMath_Backend_Build)
+})
+
+object ProtonMath_Backend_Build : BuildType({
+    name = "build"
+
+    vcs {
+        root(ProtonMath_Backend_GitGithubComProtoMath2021protomathCoreApiGit)
+    }
+})
+
+object ProtonMath_Backend_GitGithubComProtoMath2021protomathCoreApiGit : GitVcsRoot({
+    name = "git@github.com:ProtoMath2021/protomath-core-api.git"
+    url = "git@github.com:ProtoMath2021/protomath-core-api.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "proton-back-teamcity"
+    }
 })
 
 
