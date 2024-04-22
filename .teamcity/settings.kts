@@ -82,6 +82,10 @@ object ProtonMath_Backend : Project({
 object ProtonMath_Backend_Build : BuildType({
     name = "build"
 
+    params {
+        param("env.GH_TOKEN", "zxx1e5189c7c59a66eda38106bb6c265972872bd8f1365742cd9da869dac1777a88f37ecede81bcd73b775d03cbe80d301b")
+    }
+
     vcs {
         root(ProtonMath_Backend_GitGithubComProtoMath2021protomathCoreApiGit)
     }
