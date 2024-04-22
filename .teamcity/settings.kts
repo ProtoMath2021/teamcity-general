@@ -2,6 +2,7 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerSupport
 import jetbrains.buildServer.configs.kotlin.buildFeatures.vcsLabeling
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
+import jetbrains.buildServer.configs.kotlin.buildSteps.nodeJS
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.projectFeatures.buildReportTab
 import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerRegistry
@@ -83,6 +84,30 @@ object ProtonMath_Backend_Build : BuildType({
 
     vcs {
         root(ProtonMath_Backend_GitGithubComProtoMath2021protomathCoreApiGit)
+    }
+
+    steps {
+        nodeJS {
+            name = "getVer"
+            shellScript = """
+                npm install
+                npm install @semantic-release/git @semantic-release/changelog -D
+                npm update semantic-release @semantic-release/* --save-dev
+                git config --global --add safe.directory "${'$'}{'${'$'}'}(pwd)"
+                                
+                echo HELP 
+                echo %build.number%
+                echo %env.GH_TOKEN%
+                echo "`pwd`" 
+                echo "`ls -la`"
+                echo "`ls -la .git/`"
+                echo "getVer1" 
+                
+                npx semantic-release --debug --no-ci
+                
+                echo "`ls -la`"
+            """.trimIndent()
+        }
     }
 })
 
