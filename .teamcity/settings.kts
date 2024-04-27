@@ -84,7 +84,7 @@ object ProtonMath_Backend_Build : BuildType({
     name = "build"
 
     params {
-        param("env.GITHUB_TOKEN", "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")
+        param("env.GITHUB_TOKEN", "x-access-token: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")
         text("CURRENT_TAG_EXPERT", "", allowEmpty = true)
     }
 
