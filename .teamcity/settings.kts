@@ -124,11 +124,7 @@ object ProtonMath_Backend_Build : BuildType({
                 find ./out -type f -name "*.jar" -exec rm {} \;
             """.trimIndent()
         }
-        gradle {
-            name = "build"
-            tasks = "clean assemble"
-            jdkHome = "%env.JDK_17_0%"
-        }
+
         script {
             name = "renameJar"
             scriptContent = """
