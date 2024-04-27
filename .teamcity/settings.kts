@@ -83,7 +83,7 @@ object ProtonMath_Backend_Build : BuildType({
     name = "build"
 
     params {
-        param("env.GH_TOKEN", "zxx1e5189c7c59a66eda38106bb6c265972872bd8f1365742cd9da869dac1777a88f37ecede81bcd73b775d03cbe80d301b")
+        password("env.GH_TOKEN", "zxxac0b501ef9a679f4b938ec98ebb1eba75a03214e8baf60f6c0ca847e39b2c3f6e109d95e952d429fcc429c5b03f911498f3843b0bae60c1f2aa54f71867deedcb52773d364113617fab9b88ba0a3474e3214150fa0261967f9180ea9c3a09d6e", display = ParameterDisplay.HIDDEN)
     }
 
     vcs {
