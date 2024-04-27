@@ -97,7 +97,7 @@ object ProtonMath_Backend_Build : BuildType({
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
-                git config --global --add safe.directory "${'$'}(pwd)"
+                git config --global --add safe.directory "${'$'}{'${'$'}'}(pwd)"
                 echo HELP
                 echo %build.number%
                 echo %env.GH_TOKEN%
