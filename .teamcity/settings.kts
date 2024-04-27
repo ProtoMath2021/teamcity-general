@@ -96,6 +96,7 @@ object ProtonMath_Backend_Build : BuildType({
         nodeJS {
             name = "getVer"
             shellScript = """
+                echo "`mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts`"
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
@@ -111,7 +112,6 @@ object ProtonMath_Backend_Build : BuildType({
                 echo "`ls -la`"
             """.trimIndent()
             dockerPull = true
-            dockerRunParameters = "-c 'mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'"
         }
         script {
             name = "setVer"
