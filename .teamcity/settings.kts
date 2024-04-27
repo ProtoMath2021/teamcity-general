@@ -109,6 +109,48 @@ object ProtonMath_Backend_Build : BuildType({
                 echo "`ls -la`"
             """.trimIndent()
         }
+        script {
+            name = "setVer"
+            scriptContent = """
+                echo "`ls -la`"
+                git fetch --tags
+                latest_tag=${'$'}(git tag --sort=version:refname | grep -v '^backend' | tail -n 1)
+                echo "${'$'}latest_tag"
+                echo "setVer  HELP1"
+                # Set a build parameter using a service message
+                echo "##teamcity[setParameter name='CURRENT_TAG_EXPERT' value='${'$'}latest_tag']"
+                echo "setVer HELP2"
+                
+                find ./out -type f -name "*.jar" -exec rm {} \;
+            """.trimIndent()
+        }
+        gradle {
+            name = "build"
+            tasks = "clean assemble"
+            jdkHome = "%env.JDK_17_0%"
+        }
+        script {
+            name = "renameJar"
+            scriptContent = """
+                echo "`ls -la ./out/`"
+                echo "HELP renameJar"
+                echo "%CURRENT_TAG_EXPERT%"
+                mv ./out/*.jar ./out/amogus-%CURRENT_TAG_EXPERT%.jar
+                echo "`ls -la ./out/`"
+                echo "is renamed?"
+                find ./out -type f ! -name "*.jar" -exec rm {} \;
+                
+                echo "`ls -la ./out/`"
+            """.trimIndent()
+        }
+    }
+
+    features {
+        vcsLabeling {
+            vcsRootId = "${ProtonMath_Backend_GitGithubComProtoMath2021protomathCoreApiGit.id}"
+            labelingPattern = "%env.TEAMCITY_PROJECT_NAME%-%build.vcs.number%"
+            branchFilter = ""
+        }
     }
 })
 
