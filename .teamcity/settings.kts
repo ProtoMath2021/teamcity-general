@@ -103,7 +103,7 @@ object ProtonMath_Backend_Build : BuildType({
                 git config --global --add safe.directory "${'$'}(pwd)"
                 echo HELP
                 echo %build.number%
-                echo %env.GITHUB_TOKEN%
+                echo %env.GH_TOKEN%
                 echo "`pwd`"
                 echo "`ls -la`"
                 echo "`ls -la .git/`"
