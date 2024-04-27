@@ -2,6 +2,7 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerSupport
 import jetbrains.buildServer.configs.kotlin.buildFeatures.vcsLabeling
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
+import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.buildSteps.nodeJS
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.projectFeatures.buildReportTab
@@ -124,7 +125,6 @@ object ProtonMath_Backend_Build : BuildType({
                 find ./out -type f -name "*.jar" -exec rm {} \;
             """.trimIndent()
         }
-
         script {
             name = "renameJar"
             scriptContent = """
@@ -138,6 +138,11 @@ object ProtonMath_Backend_Build : BuildType({
                 
                 echo "`ls -la ./out/`"
             """.trimIndent()
+        }
+        gradle {
+            name = "build"
+            tasks = "clean assemble"
+            jdkHome = "%env.JDK_17_0%"
         }
     }
 
