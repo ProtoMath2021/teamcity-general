@@ -110,6 +110,7 @@ object ProtonMath_Backend_Build : BuildType({
                 npx semantic-release --debug --no-ci
                 echo "`ls -la`"
             """.trimIndent()
+            dockerPull = true
         }
         script {
             name = "setVer"
