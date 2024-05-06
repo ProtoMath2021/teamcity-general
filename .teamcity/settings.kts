@@ -84,6 +84,7 @@ object ProtonMath_Backend_Build : BuildType({
     name = "build"
 
     params {
+        param("env. NPM_TOKEN", "tmp")
         password("env.GH_TOKEN", "zxxac0b501ef9a679f4b938ec98ebb1eba70b4422c95ede2e0b3c51a26f5934988607f406cc7ab7d6fb7fe2376570cee5327c1a57d714dbe1d6811601d278bd312a9e1d7046a98bec878d3cd4cc3b8e8c523cbcd8c69acd81e1e7ef63546fed603f")
         text("CURRENT_TAG_EXPERT", "", allowEmpty = true)
     }
