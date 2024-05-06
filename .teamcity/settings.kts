@@ -97,6 +97,7 @@ object ProtonMath_Backend_Build : BuildType({
             name = "getVer"
             shellScript = """
                 echo "`mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts`"
+                npm init -y
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
