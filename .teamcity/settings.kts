@@ -106,6 +106,7 @@ object ProtonMath_Backend_Build : BuildType({
                 echo HELP
                 echo %build.number%
                 echo %env.GH_TOKEN%
+                echo %env.NPM_TOKEN%
                 echo "`pwd`"
                 echo "`ls -la`"
                 echo "`ls -la .git/`"
