@@ -117,6 +117,7 @@ object ProtonMath_Backend_Build : BuildType({
                 npx semantic-release --debug --no-ci
                 echo "`ls -la`"
             """.trimIndent()
+            dockerImage = "node:21.7.3-slim"
             dockerPull = true
         }
         script {
