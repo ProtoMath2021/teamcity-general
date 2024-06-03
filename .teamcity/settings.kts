@@ -156,6 +156,13 @@ object ProtonMath_Backend_Build : BuildType({
                 echo "`ls -la ./out/`"
             """.trimIndent()
         }
+        script {
+            name = "1123"
+            scriptContent = """
+                echo "работает ли"
+                docker --version
+            """.trimIndent()
+        }
     }
 
     features {
