@@ -421,7 +421,7 @@ object ProtonMath_Frontend_TeacherUiV2_Build : BuildType({
                 source = file {
                     path = "Dockerfile"
                 }
-                namesAndTags = "protonmath/proton-student-ui:%DEPLOY_TAG%"
+                namesAndTags = "protonmath/proton-teacher-ui:%DEPLOY_TAG%"
             }
         }
         dockerCommand {
