@@ -446,7 +446,7 @@ object ProtonMath_Frontend_TeacherUiV2_Build : BuildType({
                                     --set app.endSessionUrl=%env.END_SESSION_URL% \
                                     --set app.nextAuthSecret=%env.NEXTAUTH_SECRET% \
                                     --set app.cryptKey=%env.CRYPT_KEY% \
-                                	student-frontend .
+                                	teacher-ui .
             """.trimIndent()
         }
     }
