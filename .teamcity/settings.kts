@@ -404,7 +404,7 @@ object ProtonMath_Frontend_TeacherUiV2_Build : BuildType({
         password("env.NEXTAUTH_SECRET", "zxx90fd640ddc84feb3bae26bf487de1654")
         password("env.CRYPT_KEY", "zxx90fd640ddc84feb3bae26bf487de1654")
         param("env.END_SESSION_URL", "https://auth.devinfra.ru/realms/protonmath/protocol/openid-connect/logout")
-        param("env.KEYCLOAK_CLIENT_ID", "student.protonmath.ru")
+        param("env.KEYCLOAK_CLIENT_ID", "teacher.protonmath.ru")
         param("BASE_URL", "TODO")
         param("AUTH_BASE_URL", "TODO")
         param("DEPLOY_TAG", "v%build.number%")
