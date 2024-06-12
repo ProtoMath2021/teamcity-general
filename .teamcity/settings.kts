@@ -400,7 +400,7 @@ object ProtonMath_Frontend_TeacherUiV2_Build : BuildType({
         param("env.KEYCLOAK_ISSUER", "https://auth.devinfra.ru/realms/protonmath")
         param("env.KEYCLOAK_REFRESH_TOKEN_URL", "https://auth.devinfra.ru/realms/protonmath/protocol/openid-connect/token")
         password("env.KEYCLOAK_CLIENT_SECRET", "zxxb1ef4e8195fe8dfbe37e9d5f92fdc63da6b2025e57cb2acec22934181b107177775d03cbe80d301b")
-        param("env.NEXTAUTH_URL", "https://student.testinfra.online")
+        param("env.NEXTAUTH_URL", "https://teacher.testinfra.online")
         password("env.NEXTAUTH_SECRET", "zxx90fd640ddc84feb3bae26bf487de1654")
         password("env.CRYPT_KEY", "zxx90fd640ddc84feb3bae26bf487de1654")
         param("env.END_SESSION_URL", "https://auth.devinfra.ru/realms/protonmath/protocol/openid-connect/logout")
