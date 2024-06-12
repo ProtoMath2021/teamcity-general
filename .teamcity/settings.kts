@@ -427,7 +427,7 @@ object ProtonMath_Frontend_TeacherUiV2_Build : BuildType({
         dockerCommand {
             name = "publish"
             commandType = push {
-                namesAndTags = "protonmath/proton-student-ui:%DEPLOY_TAG%"
+                namesAndTags = "protonmath/proton-teacher-ui:%DEPLOY_TAG%"
             }
         }
         script {
