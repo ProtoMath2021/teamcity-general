@@ -188,6 +188,7 @@ object ProtonMath_Backend_GitGithubComProtoMath2021protomathCoreApiGit : GitVcsR
 object ProtonMath_Frontend : Project({
     name = "Frontend"
 
+    subProject(ProtonMath_Frontend_TeaachherUiV2)
     subProject(ProtonMath_Frontend_StudentUi)
     subProject(ProtonMath_Frontend_TeacherUi)
 })
@@ -288,6 +289,11 @@ object ProtonMath_Frontend_StudentUi_GitGithubComProtoMath2021protomathStudentUi
         uploadedKey = "proton-front-student-ui"
     }
     param("secure:password", "")
+})
+
+
+object ProtonMath_Frontend_TeaachherUiV2 : Project({
+    name = "teaachher-ui-v2"
 })
 
 
