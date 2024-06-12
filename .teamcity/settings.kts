@@ -472,12 +472,12 @@ object ProtonMath_Frontend_TeacherUiV2_Build : BuildType({
 })
 
 object ProtonMath_Frontend_TeacherUiV2_GitGithubComProtoMath2021protomathStudentUiGit : GitVcsRoot({
-    name = "git@github.com:ProtoMath2021/protomath-student-ui.git"
-    url = "git@github.com:ProtoMath2021/protomath-student-ui.git"
+    name = "git@github.com:ProtoMath2021/protomath-teacher-ui.git"
+    url = "git@github.com:ProtoMath2021/protomath-teacher-ui.git"
     branch = "refs/heads/main"
     authMethod = uploadedKey {
         userName = "git"
-        uploadedKey = "proton-front-student-ui"
+        uploadedKey = "proton-front-teacher-ui"
     }
     param("secure:password", "")
 })
