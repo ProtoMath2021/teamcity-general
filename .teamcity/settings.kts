@@ -106,7 +106,6 @@ object ProtonMath_Backend_Build : BuildType({
                 npm update semantic-release @semantic-release/* --save-dev
                 
                 echo HELP1
-                git config --global --add safe.directory "${'$'}(pwd)"
                 
                 echo HELP 
                 echo %build.number%
