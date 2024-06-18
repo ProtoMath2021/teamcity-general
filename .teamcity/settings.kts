@@ -97,8 +97,6 @@ object ProtonMath_Backend_Build : BuildType({
         nodeJS {
             name = "getVer"
             shellScript = """
-                echo "помогите с докером"
-                docker --version
                 echo "`mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts`"
                 npm init -y
                 npm install
