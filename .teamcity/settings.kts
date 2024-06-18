@@ -109,6 +109,7 @@ object ProtonMath_Backend_Build : BuildType({
                 npm update semantic-release @semantic-release/* --save-dev
                 
                 echo HELP1
+                apt-get install git
                 
                 echo HELP 
                 echo %build.number%
