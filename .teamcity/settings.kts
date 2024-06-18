@@ -97,15 +97,14 @@ object ProtonMath_Backend_Build : BuildType({
         nodeJS {
             name = "getVer"
             shellScript = """
-                npm init -y
+                echo "`mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts`"
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
-                
+                git config --global --add safe.directory "${'$'}{'${'$'}'}(pwd)"
                 echo HELP
                 echo %build.number%
-                echo %env.GH_TOKEN%
-                echo %env.NPM_TOKEN%
+                echo %env.GITHUB_TOKEN%
                 echo "`pwd`"
                 echo "`ls -la`"
                 echo "`ls -la .git/`"
