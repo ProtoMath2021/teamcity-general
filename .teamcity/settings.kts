@@ -97,7 +97,7 @@ object ProtonMath_Backend_Build : BuildType({
         nodeJS {
             name = "getVer"
             shellScript = """
-                RUN curl -o /usr/local/bin/jq -SL https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 \
+                curl -o /usr/local/bin/jq -SL https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 \
                 	&& chmod +x /usr/local/bin/jq
                 
                 npm init -y
