@@ -94,13 +94,6 @@ object ProtonMath_Backend_Build : BuildType({
     }
 
     steps {
-        script {
-            name = "1123"
-            scriptContent = """
-                echo "работает ли"
-                docker --version
-            """.trimIndent()
-        }
         nodeJS {
             name = "getVer"
             shellScript = """
