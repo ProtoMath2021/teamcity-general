@@ -164,6 +164,11 @@ object ProtonMath_Backend_Build : BuildType({
             labelingPattern = "%env.TEAMCITY_PROJECT_NAME%-%build.vcs.number%"
             branchFilter = ""
         }
+        dockerSupport {
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_11"
+            }
+        }
     }
 })
 
