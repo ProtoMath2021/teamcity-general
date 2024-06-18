@@ -97,15 +97,10 @@ object ProtonMath_Backend_Build : BuildType({
         nodeJS {
             name = "getVer"
             shellScript = """
-                curl -o /usr/local/bin/jq -SL https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 \
-                	&& chmod +x /usr/local/bin/jq
-                
                 npm init -y
                 npm install
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
-                
-                jq '. + {private: true}' package.json > tmp.${'$'}${'$'}.json && mv tmp.${'$'}${'$'}.json package.json
                 
                 git config --global --add safe.directory "${'$'}(pwd)"
                 echo HELP
