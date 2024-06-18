@@ -96,7 +96,10 @@ object ProtonMath_Backend_Build : BuildType({
     steps {
         script {
             name = "hosts"
-            scriptContent = """echo "`mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts`""""
+            scriptContent = """
+                echo "`mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts`"
+                apt-get install git
+            """.trimIndent()
         }
         nodeJS {
             name = "getVer"
