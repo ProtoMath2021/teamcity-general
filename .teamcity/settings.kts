@@ -148,6 +148,10 @@ object ProtonMath_Backend_Build : BuildType({
                 echo "`ls -la ./out/`"
             """.trimIndent()
         }
+        script {
+            name = "hosts"
+            scriptContent = """echo "`mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts`""""
+        }
     }
 
     features {
