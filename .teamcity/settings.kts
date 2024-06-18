@@ -123,7 +123,7 @@ object ProtonMath_Backend_Build : BuildType({
                 
                 echo "`ls -la`"
             """.trimIndent()
-            dockerImage = "node:21.7.3-slim"
+            dockerImage = "node"
             dockerPull = true
         }
         script {
