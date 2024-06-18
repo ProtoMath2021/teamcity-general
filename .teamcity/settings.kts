@@ -105,14 +105,17 @@ object ProtonMath_Backend_Build : BuildType({
                 npm install @semantic-release/git @semantic-release/changelog -D
                 npm update semantic-release @semantic-release/* --save-dev
                 git config --global --add safe.directory "${'$'}{'${'$'}'}(pwd)"
-                echo HELP
+                
+                echo HELP 
                 echo %build.number%
                 echo %env.GH_TOKEN%
-                echo "`pwd`"
+                echo "`pwd`" 
                 echo "`ls -la`"
                 echo "`ls -la .git/`"
-                echo "getVer1"
+                echo "getVer1" 
+                
                 npx semantic-release --debug --no-ci
+                
                 echo "`ls -la`"
             """.trimIndent()
             dockerImage = "node:21.7.3-slim"
