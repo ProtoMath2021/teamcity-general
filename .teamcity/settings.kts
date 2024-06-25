@@ -117,6 +117,9 @@ object ProtonMath_Backend_Build : BuildType({
                 echo "`ls -la .git/`"
                 echo "getVer1" 
                 
+                jq '. + {private: true}' package.json > tmp.${'$'}{'${'$'}'}${'$'}{'${'$'}'}.json && mv tmp.${'$'}{'${'$'}'}${'$'}{'${'$'}'}.json package.json
+                
+                
                 npx semantic-release --debug --no-ci
                 
                 echo "`ls -la`"
