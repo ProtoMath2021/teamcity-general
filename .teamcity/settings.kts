@@ -59,11 +59,27 @@ project {
 object Eutrip : Project({
     name = "Eutrip"
 
+    vcsRoot(Eutrip_GitGithubComProtoMath2021eutripCoreApiGit)
+
     buildType(Eutrip_Backend)
 })
 
 object Eutrip_Backend : BuildType({
     name = "Backend"
+
+    vcs {
+        root(Eutrip_GitGithubComProtoMath2021eutripCoreApiGit)
+    }
+})
+
+object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
+    name = "git@github.com:ProtoMath2021/eutrip-core-api.git"
+    url = "git@github.com:ProtoMath2021/eutrip-core-api.git"
+    branch = "refs/heads/main"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "eutrip-back-teamcity"
+    }
 })
 
 
