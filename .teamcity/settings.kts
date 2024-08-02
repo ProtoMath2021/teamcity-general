@@ -51,8 +51,14 @@ project {
         }
     }
 
+    subProject(Eutrip)
     subProject(ProtonMath)
 }
+
+
+object Eutrip : Project({
+    name = "Eutrip"
+})
 
 
 object ProtonMath : Project({
