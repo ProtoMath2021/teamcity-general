@@ -58,6 +58,12 @@ project {
 
 object Eutrip : Project({
     name = "Eutrip"
+
+    buildType(Eutrip_Backend)
+})
+
+object Eutrip_Backend : BuildType({
+    name = "Backend"
 })
 
 
