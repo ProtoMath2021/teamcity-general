@@ -92,6 +92,12 @@ object Eutrip_Backend : BuildType({
             }
         }
     }
+
+    features {
+        dockerSupport {
+            cleanupPushedImages = true
+        }
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
