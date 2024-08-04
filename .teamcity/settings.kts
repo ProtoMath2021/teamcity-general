@@ -83,6 +83,13 @@ object Eutrip_Backend : BuildType({
                 namesAndTags = "protonmath/eutrip-core-api:%DEPLOY_TAG%"
             }
         }
+        dockerCommand {
+            name = "tag"
+            commandType = other {
+                subCommand = "tag"
+                commandArgs = "docker.io/library/eutrip-core-api:0.0.1-SNAPSHOT protonmath/eutrip-core-api:%build.number%"
+            }
+        }
     }
 })
 
