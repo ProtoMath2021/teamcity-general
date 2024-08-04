@@ -80,7 +80,7 @@ object Eutrip_Backend : BuildType({
         dockerCommand {
             name = "publish"
             commandType = push {
-                namesAndTags = "protonmath/eutrip-core-api:%DEPLOY_TAG%"
+                namesAndTags = "protonmath/eutrip-core-api:%build.number%"
             }
         }
         dockerCommand {
