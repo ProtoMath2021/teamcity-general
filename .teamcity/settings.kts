@@ -66,6 +66,7 @@ object Eutrip : Project({
     name = "Eutrip"
 
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripCoreApiGit)
+    vcsRoot(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
 
     buildType(Eutrip_Deploy)
     buildType(Eutrip_Backend)
@@ -111,6 +112,10 @@ object Eutrip_Backend : BuildType({
 
 object Eutrip_Deploy : BuildType({
     name = "Deploy"
+
+    vcs {
+        root(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
@@ -120,6 +125,16 @@ object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
     authMethod = uploadedKey {
         userName = "git"
         uploadedKey = "eutrip-back-teamcity"
+    }
+})
+
+object Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit : GitVcsRoot({
+    name = "git@github.com:ProtoMath2021/eutrip-helm-charts.git"
+    url = "git@github.com:ProtoMath2021/eutrip-helm-charts.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "eutrip-helm-teamcity"
     }
 })
 
