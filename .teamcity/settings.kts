@@ -113,6 +113,10 @@ object Eutrip_Backend : BuildType({
 object Eutrip_Deploy : BuildType({
     name = "Deploy"
 
+    params {
+        text("DEPLOY_TAG", "11", display = ParameterDisplay.PROMPT, allowEmpty = true)
+    }
+
     vcs {
         root(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
     }
