@@ -115,6 +115,7 @@ object Eutrip_Deploy : BuildType({
 
     params {
         text("DEPLOY_TAG", "11", display = ParameterDisplay.PROMPT, allowEmpty = true)
+        password("PG_PASS", "zxxa604baaec7c27caf057cd168a37737e8", display = ParameterDisplay.HIDDEN, readOnly = true)
     }
 
     vcs {
