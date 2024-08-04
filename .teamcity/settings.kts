@@ -75,6 +75,7 @@ object Eutrip_Backend : BuildType({
         gradle {
             name = "build"
             tasks = "bootBuildImage"
+            jdkHome = "%env.JDK_21%"
         }
     }
 })
