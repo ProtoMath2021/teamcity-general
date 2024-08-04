@@ -116,6 +116,22 @@ object Eutrip_Deploy : BuildType({
     vcs {
         root(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
     }
+
+    steps {
+        script {
+            name = "deploy helm"
+            workingDir = "backend/.helm"
+            scriptContent = """
+                helm upgrade -i --namespace protonmath \
+                                    --set app.version=%DEPLOY_TAG% \
+                                    --set database.host=pg-helm-postgresql \
+                                    --set database.user=eutrip-db-user \
+                                    --set database.password=%PG_PASS% \
+                                    --set database.name=eutrip \
+                                	backend .
+            """.trimIndent()
+        }
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
