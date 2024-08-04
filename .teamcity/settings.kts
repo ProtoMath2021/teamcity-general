@@ -43,6 +43,12 @@ project {
             title = "Code Coverage"
             startPage = "coverage.zip!index.html"
         }
+        dockerRegistry {
+            id = "PROJECT_EXT_3"
+            name = "Docker Registry"
+            userName = "protonmath"
+            password = "zxxc0ce9241d87412ebc5a4bd5fa5ffed29"
+        }
     }
 
     cleanup {
