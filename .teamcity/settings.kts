@@ -79,16 +79,16 @@ object Eutrip_Backend : BuildType({
             jdkHome = "%env.JDK_21%"
         }
         dockerCommand {
-            name = "publish"
-            commandType = push {
-                namesAndTags = "protonmath/eutrip-core-api:%build.number%"
-            }
-        }
-        dockerCommand {
             name = "tag"
             commandType = other {
                 subCommand = "tag"
                 commandArgs = "docker.io/library/eutrip-core-api:0.0.1-SNAPSHOT protonmath/eutrip-core-api:%build.number%"
+            }
+        }
+        dockerCommand {
+            name = "publish"
+            commandType = push {
+                namesAndTags = "protonmath/eutrip-core-api:%build.number%"
             }
         }
     }
