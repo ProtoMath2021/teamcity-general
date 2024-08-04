@@ -67,6 +67,7 @@ object Eutrip : Project({
 
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripCoreApiGit)
 
+    buildType(Eutrip_Deploy)
     buildType(Eutrip_Backend)
 })
 
@@ -106,6 +107,10 @@ object Eutrip_Backend : BuildType({
             }
         }
     }
+})
+
+object Eutrip_Deploy : BuildType({
+    name = "Deploy"
 })
 
 object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
