@@ -77,6 +77,12 @@ object Eutrip_Backend : BuildType({
             tasks = "bootBuildImage"
             jdkHome = "%env.JDK_21%"
         }
+        dockerCommand {
+            name = "publish"
+            commandType = push {
+                namesAndTags = "protonmath/eutrip-core-api:%DEPLOY_TAG%"
+            }
+        }
     }
 })
 
