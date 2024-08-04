@@ -102,6 +102,9 @@ object Eutrip_Backend : BuildType({
     features {
         dockerSupport {
             cleanupPushedImages = true
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_3"
+            }
         }
     }
 })
