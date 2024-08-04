@@ -80,7 +80,6 @@ object Eutrip_Backend : BuildType({
     steps {
         gradle {
             name = "build"
-            enabled = false
             tasks = "bootBuildImage"
             jdkHome = "%env.JDK_21%"
         }
