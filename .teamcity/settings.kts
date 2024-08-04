@@ -70,6 +70,13 @@ object Eutrip_Backend : BuildType({
     vcs {
         root(Eutrip_GitGithubComProtoMath2021eutripCoreApiGit)
     }
+
+    steps {
+        gradle {
+            name = "build"
+            tasks = "bootBuildImage"
+        }
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
