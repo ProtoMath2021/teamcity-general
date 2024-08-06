@@ -89,7 +89,7 @@ object Eutrip_Backend : BuildType({
             name = "tag"
             commandType = other {
                 subCommand = "tag"
-                commandArgs = "docker.io/library/eutrip-core-api:0.0.1-SNAPSHOT protonmath/eutrip-core-api:%build.number%"
+                commandArgs = "docker.io/mine/java-app-run:latest protonmath/eutrip-core-api:%build.number%"
             }
         }
         dockerCommand {
