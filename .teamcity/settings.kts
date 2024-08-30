@@ -69,6 +69,7 @@ object Eutrip : Project({
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
 
     buildType(Eutrip_Deploy)
+    buildType(Eutrip_DeployBackend)
     buildType(Eutrip_Backend)
 })
 
@@ -137,6 +138,14 @@ object Eutrip_Deploy : BuildType({
             """.trimIndent()
         }
     }
+})
+
+object Eutrip_DeployBackend : BuildType({
+    name = "deploy_backend"
+
+    enablePersonalBuilds = false
+    type = BuildTypeSettings.Type.DEPLOYMENT
+    maxRunningBuilds = 1
 })
 
 object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
