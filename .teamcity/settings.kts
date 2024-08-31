@@ -96,7 +96,7 @@ object Eutrip_Backend : BuildType({
         dockerCommand {
             name = "publish"
             commandType = push {
-                namesAndTags = "protonmath/eutrip-core-api:%build.number%"
+                namesAndTags = "protonmath/eutrip-core-api:latest"
             }
         }
     }
