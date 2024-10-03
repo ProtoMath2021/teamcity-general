@@ -179,6 +179,12 @@ object Eutrip_Frontend : BuildType({
                 namesAndTags = "protonmath/eutrip-admin-ui:latest"
             }
         }
+        dockerCommand {
+            name = "push"
+            commandType = push {
+                namesAndTags = "protonmath/eutrip-admin-ui:latest"
+            }
+        }
     }
 
     features {
