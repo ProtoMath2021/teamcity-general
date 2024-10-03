@@ -155,7 +155,7 @@ object Eutrip_DeployBackend : BuildType({
     steps {
         script {
             name = "requirements"
-            scriptContent = "whoami"
+            scriptContent = "ansible-galaxy install -r requirements.yml"
         }
     }
 
