@@ -69,7 +69,6 @@ object Eutrip : Project({
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripCoreApiGit)
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
 
-    buildType(Eutrip_Deploy)
     buildType(Eutrip_DeployBackend)
     buildType(Eutrip_Backend)
 })
@@ -108,35 +107,6 @@ object Eutrip_Backend : BuildType({
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_3"
             }
-        }
-    }
-})
-
-object Eutrip_Deploy : BuildType({
-    name = "Deploy"
-
-    params {
-        text("DEPLOY_TAG", "11", display = ParameterDisplay.PROMPT, allowEmpty = true)
-        password("PG_PASS", "zxxa604baaec7c27caf057cd168a37737e8", display = ParameterDisplay.HIDDEN, readOnly = true)
-    }
-
-    vcs {
-        root(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
-    }
-
-    steps {
-        script {
-            name = "deploy helm"
-            workingDir = "backend/.helm"
-            scriptContent = """
-                helm upgrade -i --namespace protonmath \
-                                    --set app.version=%DEPLOY_TAG% \
-                                    --set database.host=pg-helm-postgresql \
-                                    --set database.user=eutrip-db-user \
-                                    --set database.password=%PG_PASS% \
-                                    --set database.name=eutrip \
-                                	backend .
-            """.trimIndent()
         }
     }
 })
