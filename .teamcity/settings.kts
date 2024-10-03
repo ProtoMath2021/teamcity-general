@@ -72,6 +72,7 @@ object Eutrip : Project({
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
 
     buildType(Eutrip_DeployBackend)
+    buildType(Eutrip_Frontend)
     buildType(Eutrip_Backend)
 })
 
@@ -158,6 +159,10 @@ object Eutrip_DeployBackend : BuildType({
     requirements {
         equals("teamcity.agent.name", "Agent 2-1")
     }
+})
+
+object Eutrip_Frontend : BuildType({
+    name = "Frontend"
 })
 
 object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
