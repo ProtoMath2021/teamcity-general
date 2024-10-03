@@ -161,6 +161,10 @@ object Eutrip_DeployBackend : BuildType({
             """.trimIndent()
         }
     }
+
+    requirements {
+        equals("teamcity.agent.name", "Agent 2-1")
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
