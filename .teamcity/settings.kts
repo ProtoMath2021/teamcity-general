@@ -159,15 +159,7 @@ object Eutrip_DeployBackend : BuildType({
     steps {
         script {
             name = "requirements"
-            scriptContent = """
-                #!/bin/bash
-                
-                echo 'export PATH=${'$'}PATH:~/.local/bin' >> ~/.bashrc
-                
-                source ~/.bashrc
-                
-                ansible-galaxy install -r requirements.yml
-            """.trimIndent()
+            scriptContent = "ansible-galaxy install -r requirements.yml"
         }
     }
 
