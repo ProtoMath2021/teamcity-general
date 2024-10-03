@@ -164,6 +164,10 @@ object Eutrip_DeployBackend : BuildType({
 
 object Eutrip_Frontend : BuildType({
     name = "Frontend"
+
+    vcs {
+        root(Eutrip_GitGithubComProtoMath2021eutripAdminUiGit)
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
