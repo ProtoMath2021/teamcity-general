@@ -154,8 +154,8 @@ object Eutrip_DeployBackend : BuildType({
 
     steps {
         script {
-            name = "test"
-            scriptContent = "ls -al"
+            name = "requirements"
+            scriptContent = "ansible-galaxy install -r requirements.yml"
         }
     }
 })
