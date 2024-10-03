@@ -147,6 +147,10 @@ object Eutrip_DeployBackend : BuildType({
     enablePersonalBuilds = false
     type = BuildTypeSettings.Type.DEPLOYMENT
     maxRunningBuilds = 1
+
+    vcs {
+        root(Eutrip_GitGithubComProtoMath2021ansibleHostGit)
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
