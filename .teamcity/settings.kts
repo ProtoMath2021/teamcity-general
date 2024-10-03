@@ -151,6 +151,13 @@ object Eutrip_DeployBackend : BuildType({
     vcs {
         root(Eutrip_GitGithubComProtoMath2021ansibleHostGit)
     }
+
+    steps {
+        script {
+            name = "test"
+            scriptContent = "ls -al"
+        }
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
