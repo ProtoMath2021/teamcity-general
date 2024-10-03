@@ -69,6 +69,7 @@ object Eutrip : Project({
 
     vcsRoot(Eutrip_GitGithubComProtoMath2021ansibleHostGit)
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripCoreApiGit)
+    vcsRoot(Eutrip_GitGithubComProtoMath2021eutripAdminUiGit)
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
 
     buildType(Eutrip_DeployBackend)
@@ -172,6 +173,16 @@ object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
     authMethod = uploadedKey {
         userName = "git"
         uploadedKey = "eutrip_cd"
+    }
+})
+
+object Eutrip_GitGithubComProtoMath2021eutripAdminUiGit : GitVcsRoot({
+    name = "git@github.com:ProtoMath2021/eutrip-admin-ui.git"
+    url = "git@github.com:ProtoMath2021/eutrip-admin-ui.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "eutrip-front-teamcity"
     }
 })
 
