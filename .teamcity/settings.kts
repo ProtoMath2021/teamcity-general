@@ -177,6 +177,15 @@ object Eutrip_Frontend : BuildType({
                 }
             }
         }
+        dockerCommand {
+            name = "build"
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+                namesAndTags = "protonmath/eutrip-admin-ui:latest"
+            }
+        }
     }
 })
 
