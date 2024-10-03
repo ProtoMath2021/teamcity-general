@@ -191,6 +191,15 @@ object Eutrip_Frontend : BuildType({
         }
     }
 
+    triggers {
+        vcs {
+            quietPeriodMode = VcsTrigger.QuietPeriodMode.USE_DEFAULT
+            triggerRules = "+:root=${Eutrip_GitGithubComProtoMath2021eutripAdminUiGit.id}:**"
+
+            branchFilter = ""
+        }
+    }
+
     features {
         dockerSupport {
             cleanupPushedImages = true
