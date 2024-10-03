@@ -65,6 +65,7 @@ project {
 object Eutrip : Project({
     name = "Eutrip"
 
+    vcsRoot(Eutrip_GitGithubComProtoMath2021ansibleHostGit)
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripCoreApiGit)
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
 
@@ -146,6 +147,16 @@ object Eutrip_DeployBackend : BuildType({
     enablePersonalBuilds = false
     type = BuildTypeSettings.Type.DEPLOYMENT
     maxRunningBuilds = 1
+})
+
+object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
+    name = "git@github.com:ProtoMath2021/ansible-host.git"
+    url = "git@github.com:ProtoMath2021/ansible-host.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "eutrip_cd"
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021eutripCoreApiGit : GitVcsRoot({
