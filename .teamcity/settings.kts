@@ -148,6 +148,10 @@ object Eutrip_DeployBackend : BuildType({
     type = BuildTypeSettings.Type.DEPLOYMENT
     maxRunningBuilds = 1
 
+    params {
+        param("env.PATH", "/usr/local/sbin:/usr/local/bin")
+    }
+
     vcs {
         root(Eutrip_GitGithubComProtoMath2021ansibleHostGit)
     }
