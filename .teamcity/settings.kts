@@ -168,6 +168,16 @@ object Eutrip_Frontend : BuildType({
     vcs {
         root(Eutrip_GitGithubComProtoMath2021eutripAdminUiGit)
     }
+
+    steps {
+        dockerCommand {
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+            }
+        }
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
