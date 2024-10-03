@@ -161,10 +161,6 @@ object Eutrip_DeployBackend : BuildType({
             """.trimIndent()
         }
     }
-
-    requirements {
-        exists("ansible")
-    }
 })
 
 object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
