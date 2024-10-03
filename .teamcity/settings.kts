@@ -171,13 +171,6 @@ object Eutrip_Frontend : BuildType({
 
     steps {
         dockerCommand {
-            commandType = build {
-                source = file {
-                    path = "Dockerfile"
-                }
-            }
-        }
-        dockerCommand {
             name = "build"
             commandType = build {
                 source = file {
