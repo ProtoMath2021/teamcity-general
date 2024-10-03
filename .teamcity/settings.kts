@@ -180,6 +180,15 @@ object Eutrip_Frontend : BuildType({
             }
         }
     }
+
+    features {
+        dockerSupport {
+            cleanupPushedImages = true
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_3"
+            }
+        }
+    }
 })
 
 object Eutrip_GitGithubComProtoMath2021ansibleHostGit : GitVcsRoot({
