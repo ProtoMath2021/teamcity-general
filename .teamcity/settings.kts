@@ -149,7 +149,7 @@ object Eutrip_DeployBackend : BuildType({
     maxRunningBuilds = 1
 
     params {
-        param("env.PATH", "/usr/local/sbin:/usr/local/bin")
+        param("env.PATH", "/usr/local/sbin:/usr/local/bin:/home/buildagent/.local/bin")
     }
 
     vcs {
