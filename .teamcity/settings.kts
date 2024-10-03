@@ -125,7 +125,7 @@ object Eutrip_Backend : BuildType({
 })
 
 object Eutrip_DeployBackend : BuildType({
-    name = "deploy_backend"
+    name = "Deploy"
 
     enablePersonalBuilds = false
     type = BuildTypeSettings.Type.DEPLOYMENT
