@@ -7,6 +7,7 @@ import jetbrains.buildServer.configs.kotlin.buildSteps.nodeJS
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.projectFeatures.buildReportTab
 import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerRegistry
+import jetbrains.buildServer.configs.kotlin.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 
@@ -134,6 +135,13 @@ object Eutrip_DeployBackend : BuildType({
         script {
             name = "deploy playbook"
             scriptContent = "ansible-playbook -i ./projects/eutrip/inventory/dev/inv ./projects/eutrip/playbooks/play-app.yaml -e ansible_user=cd_tech_agent -e ansible_host=85.30.208.151 -e ansible_port=2207 -vvv"
+        }
+    }
+
+    triggers {
+        finishBuildTrigger {
+            buildType = "${Eutrip_Backend.id}"
+            successfulOnly = true
         }
     }
 
