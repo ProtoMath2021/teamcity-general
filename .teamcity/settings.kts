@@ -7,6 +7,7 @@ import jetbrains.buildServer.configs.kotlin.buildSteps.nodeJS
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.projectFeatures.buildReportTab
 import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerRegistry
+import jetbrains.buildServer.configs.kotlin.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
@@ -99,6 +100,15 @@ object Eutrip_Backend : BuildType({
             commandType = push {
                 namesAndTags = "protonmath/eutrip-core-api:latest"
             }
+        }
+    }
+
+    triggers {
+        vcs {
+            quietPeriodMode = VcsTrigger.QuietPeriodMode.USE_DEFAULT
+            triggerRules = "+:root=${Eutrip_GitGithubComProtoMath2021eutripCoreApiGit.id}:**"
+
+            branchFilter = ""
         }
     }
 
