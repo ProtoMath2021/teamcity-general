@@ -169,6 +169,10 @@ object Eutrip_DeployBackend : BuildType({
 object Eutrip_Frontend : BuildType({
     name = "Frontend"
 
+    params {
+        param("env.REACT_APP_API_URL", "https://eutrip.devinfra.ru/api")
+    }
+
     vcs {
         root(Eutrip_GitGithubComProtoMath2021eutripAdminUiGit)
     }
