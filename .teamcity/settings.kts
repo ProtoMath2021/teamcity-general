@@ -185,6 +185,7 @@ object Eutrip_Frontend : BuildType({
                     path = "Dockerfile"
                 }
                 namesAndTags = "protonmath/eutrip-admin-ui:latest"
+                commandArgs = "--build-arg REACT_APP_API_URL=%env.REACT_APP_API_URL%"
             }
         }
         dockerCommand {
