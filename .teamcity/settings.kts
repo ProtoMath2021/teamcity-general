@@ -234,7 +234,7 @@ object Eutrip_FrontendProd : BuildType({
                 source = file {
                     path = "Dockerfile"
                 }
-                namesAndTags = "protonmath/eutrip-admin-ui:latest"
+                namesAndTags = "protonmath/eutrip-admin-ui:prod-%build.counter%"
                 commandArgs = "--build-arg REACT_APP_API_URL=%env.REACT_APP_API_URL%"
             }
         }
