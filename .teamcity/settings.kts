@@ -220,7 +220,7 @@ object Eutrip_FrontendProd : BuildType({
     name = "Frontend_prod"
 
     params {
-        param("env.REACT_APP_API_URL", "https://eutrip.devinfra.ru/api")
+        param("env.REACT_APP_API_URL", "https://portal.europevoyage.it/api")
     }
 
     vcs {
