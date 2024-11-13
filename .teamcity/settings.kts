@@ -219,6 +219,8 @@ object Eutrip_Frontend : BuildType({
 object Eutrip_FrontendProd : BuildType({
     name = "Frontend_prod"
 
+    buildNumberPattern = "prod-%build.counter%"
+
     params {
         param("env.REACT_APP_API_URL", "https://portal.europevoyage.it/api")
     }
