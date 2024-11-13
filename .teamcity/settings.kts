@@ -170,6 +170,8 @@ object Eutrip_DeployBackend : BuildType({
 object Eutrip_Frontend : BuildType({
     name = "Frontend"
 
+    buildNumberPattern = "dev-%build.counter%"
+
     params {
         param("env.REACT_APP_API_URL", "https://eutrip.devinfra.ru/api")
     }
