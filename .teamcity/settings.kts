@@ -241,7 +241,7 @@ object Eutrip_FrontendProd : BuildType({
         dockerCommand {
             name = "push"
             commandType = push {
-                namesAndTags = "protonmath/eutrip-admin-ui:latest"
+                namesAndTags = "protonmath/eutrip-admin-ui:%build.counter%"
             }
         }
     }
