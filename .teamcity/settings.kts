@@ -72,6 +72,7 @@ object Eutrip : Project({
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripAdminUiGit)
     vcsRoot(Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit)
 
+    buildType(Eutrip_FrontendProd)
     buildType(Eutrip_DeployBackend)
     buildType(Eutrip_Frontend)
     buildType(Eutrip_Backend)
@@ -168,6 +169,55 @@ object Eutrip_DeployBackend : BuildType({
 
 object Eutrip_Frontend : BuildType({
     name = "Frontend"
+
+    params {
+        param("env.REACT_APP_API_URL", "https://eutrip.devinfra.ru/api")
+    }
+
+    vcs {
+        root(Eutrip_GitGithubComProtoMath2021eutripAdminUiGit)
+    }
+
+    steps {
+        dockerCommand {
+            name = "build"
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+                namesAndTags = "protonmath/eutrip-admin-ui:latest"
+                commandArgs = "--build-arg REACT_APP_API_URL=%env.REACT_APP_API_URL%"
+            }
+        }
+        dockerCommand {
+            name = "push"
+            commandType = push {
+                namesAndTags = "protonmath/eutrip-admin-ui:latest"
+            }
+        }
+    }
+
+    triggers {
+        vcs {
+            quietPeriodMode = VcsTrigger.QuietPeriodMode.USE_DEFAULT
+            triggerRules = "+:root=${Eutrip_GitGithubComProtoMath2021eutripAdminUiGit.id}:**"
+
+            branchFilter = ""
+        }
+    }
+
+    features {
+        dockerSupport {
+            cleanupPushedImages = true
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_3"
+            }
+        }
+    }
+})
+
+object Eutrip_FrontendProd : BuildType({
+    name = "Frontend_prod"
 
     params {
         param("env.REACT_APP_API_URL", "https://eutrip.devinfra.ru/api")
