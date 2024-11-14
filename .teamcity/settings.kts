@@ -134,9 +134,9 @@ object Eutrip_DeployBackend : BuildType({
 
     params {
         param("env.PATH", "/usr/bin:/usr/sbin:/usr/local/sbin:/usr/local/bin:/home/buildagent/.local/bin")
-        param("ui_version", "")
         checkbox("prod", "false", label = "prod", display = ParameterDisplay.PROMPT,
                   checked = "true", unchecked = "false")
+        param("ui_version", "")
     }
 
     vcs {
@@ -154,10 +154,6 @@ object Eutrip_DeployBackend : BuildType({
         }
         script {
             name = "deploy playbook prod"
-
-            conditions {
-                equals("prod", "true")
-            }
             scriptContent = "ansible-playbook -i ./projects/eutrip/inventory/dev/inv ./projects/eutrip/playbooks/play-app.yaml -e ansible_user=cd_tech_agent -e ansible_host=103.137.248.112 -e ansible_port=22 -e ui_version=prod-%ui_version% -vvv"
         }
     }
