@@ -134,6 +134,7 @@ object Eutrip_DeployBackend : BuildType({
 
     params {
         param("env.PATH", "/usr/bin:/usr/sbin:/usr/local/sbin:/usr/local/bin:/home/buildagent/.local/bin")
+        param("ui_version", "")
     }
 
     vcs {
