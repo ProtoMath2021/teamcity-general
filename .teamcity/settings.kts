@@ -158,7 +158,7 @@ object Eutrip_DeployBackend : BuildType({
             conditions {
                 equals("prod", "true")
             }
-            scriptContent = "ansible-playbook -i ./projects/eutrip/inventory/prod/inv ./projects/eutrip/playbooks/play-app.yaml -e ansible_user=cd_tech_agent -e ansible_host=103.137.248.112 -e ansible_port=22 -e ui_version=prod-%ui_version% -vvv"
+            scriptContent = "ansible-playbook -i ./projects/eutrip/inventory/prod/inv ./projects/eutrip/playbooks/play-app.yaml -e ansible_user=infra -e ansible_host=103.137.248.112 -e ansible_port=22 -e ui_version=prod-%ui_version% -vvv"
         }
     }
 
