@@ -167,10 +167,6 @@ object Eutrip_DeployBackend : BuildType({
             buildType = "${Eutrip_Backend.id}"
             successfulOnly = true
         }
-        finishBuildTrigger {
-            buildType = "${Eutrip_Frontend.id}"
-            successfulOnly = true
-        }
     }
 
     requirements {
