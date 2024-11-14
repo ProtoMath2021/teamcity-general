@@ -136,7 +136,7 @@ object Eutrip_DeployBackend : BuildType({
         param("env.PATH", "/usr/bin:/usr/sbin:/usr/local/sbin:/usr/local/bin:/home/buildagent/.local/bin")
         checkbox("prod", "false", label = "prod", display = ParameterDisplay.PROMPT,
                   checked = "true", unchecked = "false")
-        param("ui_version", "")
+        text("ui_version", "", label = "ui_version", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {
