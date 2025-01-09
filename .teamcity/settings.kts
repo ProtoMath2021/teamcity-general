@@ -328,6 +328,10 @@ object Gptbot : Project({
 
 object Gptbot_Backend : BuildType({
     name = "Backend"
+
+    vcs {
+        root(Gptbot_BotForgeBack)
+    }
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
