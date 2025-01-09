@@ -321,11 +321,22 @@ object Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit : GitVcsRoot({
 object Gptbot : Project({
     name = "Gptbot"
 
+    vcsRoot(Gptbot_BotForgeBack)
+
     buildType(Gptbot_Backend)
 })
 
 object Gptbot_Backend : BuildType({
     name = "Backend"
+})
+
+object Gptbot_BotForgeBack : GitVcsRoot({
+    name = "BotForge-back"
+    url = "git@github.com:ProtoMath2021/BotForge.git"
+    branch = "master"
+    authMethod = uploadedKey {
+        uploadedKey = "gptbot-back-teamcity"
+    }
 })
 
 
