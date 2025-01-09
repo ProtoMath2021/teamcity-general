@@ -320,6 +320,12 @@ object Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit : GitVcsRoot({
 
 object Gptbot : Project({
     name = "Gptbot"
+
+    buildType(Gptbot_Backend)
+})
+
+object Gptbot_Backend : BuildType({
+    name = "Backend"
 })
 
 
