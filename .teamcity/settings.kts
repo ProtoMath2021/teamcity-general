@@ -61,6 +61,7 @@ project {
 
     subProject(Eutrip)
     subProject(ProtonMath)
+    subProject(Gptbot)
 }
 
 
@@ -314,6 +315,11 @@ object Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit : GitVcsRoot({
         userName = "git"
         uploadedKey = "eutrip-helm-teamcity"
     }
+})
+
+
+object Gptbot : Project({
+    name = "Gptbot"
 })
 
 
