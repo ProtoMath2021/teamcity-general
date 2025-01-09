@@ -332,6 +332,13 @@ object Gptbot_Backend : BuildType({
     vcs {
         root(Gptbot_BotForgeBack)
     }
+
+    steps {
+        gradle {
+            name = "build"
+            tasks = "bootBuildImage"
+        }
+    }
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
