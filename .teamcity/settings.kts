@@ -377,6 +377,18 @@ object Gptbot_Deploy : BuildType({
     vcs {
         root(Gptbot_GitGithubComDev4teamAiGptAgentApiGit)
     }
+
+    steps {
+        script {
+            name = "deploy helm"
+            workingDir = ".helm"
+            scriptContent = """
+                helm upgrade -i --namespace gptbot \
+                                    --set app.version=%DEPLOY_TAG% \
+                                	backend .
+            """.trimIndent()
+        }
+    }
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
