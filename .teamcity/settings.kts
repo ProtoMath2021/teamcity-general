@@ -373,6 +373,10 @@ object Gptbot_Deploy : BuildType({
     enablePersonalBuilds = false
     type = BuildTypeSettings.Type.DEPLOYMENT
     maxRunningBuilds = 1
+
+    vcs {
+        root(Gptbot_GitGithubComDev4teamAiGptAgentApiGit)
+    }
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
