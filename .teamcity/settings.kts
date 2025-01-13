@@ -331,6 +331,10 @@ object Gptbot : Project({
 object Gptbot_Backend : BuildType({
     name = "Backend"
 
+    vcs {
+        root(Gptbot_GitGithubComDev4teamAiGptAgentApiGit)
+    }
+
     steps {
         gradle {
             name = "build"
