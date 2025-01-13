@@ -345,7 +345,7 @@ object Gptbot_Backend : BuildType({
             name = "tag"
             commandType = other {
                 subCommand = "tag"
-                commandArgs = "docker.io/mine/java-app-run:latest protonmath/gpt-agent-api:%build.number%"
+                commandArgs = "docker.io/library/api-gateway:latest protonmath/gpt-agent-api:%build.number%"
             }
         }
         dockerCommand {
