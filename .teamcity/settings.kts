@@ -321,6 +321,7 @@ object Eutrip_GitGithubComProtoMath2021eutripHelmChartsGit : GitVcsRoot({
 object Gptbot : Project({
     name = "Gptbot"
 
+    vcsRoot(Gptbot_GitGithubComDev4teamAiGptAgentApiGit)
     vcsRoot(Gptbot_BotForgeBack)
 
     buildType(Gptbot_Backend)
@@ -337,6 +338,7 @@ object Gptbot_Backend : BuildType({
         gradle {
             name = "build"
             tasks = "bootBuildImage"
+            jdkHome = "%env.JDK_17_0%"
         }
     }
 })
@@ -347,6 +349,16 @@ object Gptbot_BotForgeBack : GitVcsRoot({
     branch = "master"
     authMethod = uploadedKey {
         uploadedKey = "gptbot-back-teamcity"
+    }
+})
+
+object Gptbot_GitGithubComDev4teamAiGptAgentApiGit : GitVcsRoot({
+    name = "git@github.com:dev4team-ai/gpt-agent-api.git"
+    url = "git@github.com:dev4team-ai/gpt-agent-api.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "gpt-agent-api"
     }
 })
 
