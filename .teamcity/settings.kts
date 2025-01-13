@@ -326,6 +326,7 @@ object Gptbot : Project({
     vcsRoot(Gptbot_BotForgeBack)
 
     buildType(Gptbot_Backend)
+    buildType(Gptbot_Deploy)
 })
 
 object Gptbot_Backend : BuildType({
@@ -364,6 +365,14 @@ object Gptbot_Backend : BuildType({
             }
         }
     }
+})
+
+object Gptbot_Deploy : BuildType({
+    name = "Deploy"
+
+    enablePersonalBuilds = false
+    type = BuildTypeSettings.Type.DEPLOYMENT
+    maxRunningBuilds = 1
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
