@@ -341,6 +341,13 @@ object Gptbot_Backend : BuildType({
             tasks = "bootBuildImage"
             jdkHome = "%env.JDK_17_0%"
         }
+        dockerCommand {
+            name = "tag"
+            commandType = other {
+                subCommand = "tag"
+                commandArgs = "docker.io/mine/java-app-run:latest protonmath/eutrip-core-api:%build.number%"
+            }
+        }
     }
 })
 
