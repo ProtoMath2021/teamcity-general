@@ -418,6 +418,12 @@ object Gptbot_Frontend : BuildType({
                 commandArgs = "--build-arg REACT_APP_API_URL=%env.REACT_APP_API_URL%"
             }
         }
+        dockerCommand {
+            name = "push"
+            commandType = push {
+                namesAndTags = "protonmath/gpt-agent-ui:%build.counter%"
+            }
+        }
     }
 })
 
