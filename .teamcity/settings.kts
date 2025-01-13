@@ -331,10 +331,6 @@ object Gptbot : Project({
 object Gptbot_Backend : BuildType({
     name = "Backend"
 
-    vcs {
-        root(Gptbot_BotForgeBack)
-    }
-
     steps {
         gradle {
             name = "build"
