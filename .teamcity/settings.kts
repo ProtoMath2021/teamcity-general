@@ -402,6 +402,19 @@ object Gptbot_Frontend : BuildType({
     vcs {
         root(Gptbot_GitGithubComDev4teamAiGptAgentUiGit)
     }
+
+    steps {
+        dockerCommand {
+            name = "build"
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+                namesAndTags = "protonmath/gpt-agent-ui:%build.counter%"
+                commandArgs = "--build-arg REACT_APP_API_URL=%env.REACT_APP_API_URL%"
+            }
+        }
+    }
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
