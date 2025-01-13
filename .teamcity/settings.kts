@@ -425,6 +425,15 @@ object Gptbot_Frontend : BuildType({
             }
         }
     }
+
+    features {
+        dockerSupport {
+            cleanupPushedImages = true
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_3"
+            }
+        }
+    }
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
