@@ -403,6 +403,10 @@ object Gptbot_DeployFrontend : BuildType({
     enablePersonalBuilds = false
     type = BuildTypeSettings.Type.DEPLOYMENT
     maxRunningBuilds = 1
+
+    vcs {
+        root(Gptbot_GitGithubComDev4teamAiGptAgentUiGit)
+    }
 })
 
 object Gptbot_Frontend : BuildType({
