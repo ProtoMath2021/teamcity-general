@@ -322,6 +322,7 @@ object Gptbot : Project({
     name = "Gptbot"
 
     vcsRoot(Gptbot_GitGithubComDev4teamAiGptAgentApiGit)
+    vcsRoot(Gptbot_GitGithubComDev4teamAiGptAgentUiGit)
     vcsRoot(Gptbot_BotForgeBack)
 
     buildType(Gptbot_Backend)
@@ -359,6 +360,16 @@ object Gptbot_GitGithubComDev4teamAiGptAgentApiGit : GitVcsRoot({
     authMethod = uploadedKey {
         userName = "git"
         uploadedKey = "gpt-agent-api"
+    }
+})
+
+object Gptbot_GitGithubComDev4teamAiGptAgentUiGit : GitVcsRoot({
+    name = "git@github.com:dev4team-ai/gpt-agent-ui.git"
+    url = "git@github.com:dev4team-ai/gpt-agent-ui.git"
+    branch = "refs/heads/master"
+    authMethod = uploadedKey {
+        userName = "git"
+        uploadedKey = "gpt-agent-ui"
     }
 })
 
