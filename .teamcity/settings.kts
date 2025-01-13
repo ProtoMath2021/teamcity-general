@@ -370,7 +370,7 @@ object Gptbot_Backend : BuildType({
 })
 
 object Gptbot_Deploy : BuildType({
-    name = "Deploy"
+    name = "Deploy_Backend"
 
     enablePersonalBuilds = false
     type = BuildTypeSettings.Type.DEPLOYMENT
