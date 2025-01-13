@@ -348,6 +348,12 @@ object Gptbot_Backend : BuildType({
                 commandArgs = "docker.io/mine/java-app-run:latest protonmath/gpt-agent-api:%build.number%"
             }
         }
+        dockerCommand {
+            name = "publish"
+            commandType = push {
+                namesAndTags = "protonmath/gpt-agent-api:%build.number%"
+            }
+        }
     }
 })
 
