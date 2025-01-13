@@ -399,6 +399,10 @@ object Gptbot_Deploy : BuildType({
 object Gptbot_Frontend : BuildType({
     name = "Frontend"
 
+    params {
+        param("env.REACT_APP_API_URL", "https://aichatter.ru/api/")
+    }
+
     vcs {
         root(Gptbot_GitGithubComDev4teamAiGptAgentUiGit)
     }
