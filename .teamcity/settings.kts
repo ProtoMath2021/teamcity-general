@@ -404,6 +404,10 @@ object Gptbot_DeployFrontend : BuildType({
     type = BuildTypeSettings.Type.DEPLOYMENT
     maxRunningBuilds = 1
 
+    params {
+        text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
+    }
+
     vcs {
         root(Gptbot_GitGithubComDev4teamAiGptAgentUiGit)
     }
