@@ -327,6 +327,7 @@ object Gptbot : Project({
 
     buildType(Gptbot_Backend)
     buildType(Gptbot_Deploy)
+    buildType(Gptbot_DeployFrontend)
     buildType(Gptbot_Frontend)
 })
 
@@ -394,6 +395,14 @@ object Gptbot_Deploy : BuildType({
             """.trimIndent()
         }
     }
+})
+
+object Gptbot_DeployFrontend : BuildType({
+    name = "Deploy_Frontend"
+
+    enablePersonalBuilds = false
+    type = BuildTypeSettings.Type.DEPLOYMENT
+    maxRunningBuilds = 1
 })
 
 object Gptbot_Frontend : BuildType({
