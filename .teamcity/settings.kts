@@ -327,6 +327,7 @@ object Gptbot : Project({
 
     buildType(Gptbot_Backend)
     buildType(Gptbot_Deploy)
+    buildType(Gptbot_Frontend)
 })
 
 object Gptbot_Backend : BuildType({
@@ -393,6 +394,10 @@ object Gptbot_Deploy : BuildType({
             """.trimIndent()
         }
     }
+})
+
+object Gptbot_Frontend : BuildType({
+    name = "Frontend"
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
