@@ -375,7 +375,7 @@ object Gptbot_Deploy : BuildType({
     maxRunningBuilds = 1
 
     params {
-        text("DEPLOY_TAG", "", allowEmpty = true)
+        text("DEPLOY_TAG", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {
