@@ -398,6 +398,10 @@ object Gptbot_Deploy : BuildType({
 
 object Gptbot_Frontend : BuildType({
     name = "Frontend"
+
+    vcs {
+        root(Gptbot_GitGithubComDev4teamAiGptAgentUiGit)
+    }
 })
 
 object Gptbot_BotForgeBack : GitVcsRoot({
