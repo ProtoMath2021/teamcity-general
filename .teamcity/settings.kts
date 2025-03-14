@@ -342,7 +342,6 @@ object Gptbot_Backend : BuildType({
         gradle {
             name = "build"
             tasks = "bootBuildImage"
-            jdkHome = "%env.JDK_17_0%"
         }
         dockerCommand {
             name = "tag"
