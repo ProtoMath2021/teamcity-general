@@ -366,6 +366,10 @@ object Gptbot_Backend : BuildType({
             }
         }
     }
+
+    requirements {
+        exists("env.JDK_21")
+    }
 })
 
 object Gptbot_Deploy : BuildType({
