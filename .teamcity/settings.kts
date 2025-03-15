@@ -359,6 +359,12 @@ object Gptbot_Backend : BuildType({
         }
     }
 
+    triggers {
+        vcs {
+            branchFilter = ""
+        }
+    }
+
     features {
         dockerSupport {
             cleanupPushedImages = true
