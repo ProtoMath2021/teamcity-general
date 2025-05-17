@@ -336,6 +336,8 @@ object Gptbot_Backend : BuildType({
 
     vcs {
         root(Gptbot_GitGithubComDev4teamAiGptAgentApiGit)
+
+        cleanCheckout = true
     }
 
     steps {
