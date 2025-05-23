@@ -407,17 +407,6 @@ object Gptbot_Deploy : BuildType({
             """.trimIndent()
         }
     }
-
-    triggers {
-        finishBuildTrigger {
-            buildType = "${Gptbot_Backend.id}"
-            successfulOnly = true
-
-            buildParams {
-                text("DEPLOY_TAG", "%build.number%", display = ParameterDisplay.PROMPT, allowEmpty = true)
-            }
-        }
-    }
 })
 
 object Gptbot_DeployFrontend : BuildType({
