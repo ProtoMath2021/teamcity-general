@@ -9,7 +9,6 @@ object GptbotProject : Project({
 
     vcsRoot(GptAgentApiGit)
     vcsRoot(GptAgentUiGit)
-    vcsRoot(BotForgeBackGit)
 
     buildType(Backend)
     buildType(Deploy)
