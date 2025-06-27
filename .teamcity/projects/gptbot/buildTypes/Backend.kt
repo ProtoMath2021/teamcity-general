@@ -45,11 +45,11 @@ object Backend : BuildType({
     }
 
     features {
-        dockerSupport {
-            cleanupPushedImages = true
-            loginToRegistry = on {
-                dockerRegistryId = "PROJECT_EXT_3"
-            }
+        feature {
+            type = "DockerSupport"
+            param("cleanupPushedImages", "true")
+            param("loginToRegistry", "true")
+            param("dockerRegistryId", "PROJECT_EXT_3")
         }
     }
 
