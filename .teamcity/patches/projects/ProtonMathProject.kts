@@ -22,7 +22,6 @@ changeProject(RelativeId("ProtonMathProject")) {
             }
         }
         feature1.apply {
-            password = "credentialsJSON:b2c095a0-9755-4f30-b3e3-bd469b310511"
         }
     }
 }

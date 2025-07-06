@@ -22,7 +22,6 @@ changeProject(DslContext.projectId) {
             }
         }
         feature1.apply {
-            password = "credentialsJSON:898461ab-6060-41c9-af85-ef16dbe53099"
         }
     }
 }
