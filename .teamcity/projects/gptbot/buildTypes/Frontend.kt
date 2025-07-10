@@ -44,4 +44,8 @@ object Frontend : BuildType({
             }
         }
     }
+
+    requirements {
+        equals("env.AGENT_TYPE", "nodejs-build")
+    }
 })

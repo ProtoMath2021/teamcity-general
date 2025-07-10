@@ -31,4 +31,8 @@ object DeployFrontend : BuildType({
             """.trimIndent()
         }
     }
+
+    requirements {
+        equals("env.AGENT_TYPE", "helm-deploy")
+    }
 })
