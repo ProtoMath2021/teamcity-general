@@ -34,17 +34,28 @@
       <id>JetBrains</id>
       <url>https://download.jetbrains.com/teamcity-repository</url>
     </pluginRepository>
+    <pluginRepository>
+      <id>teamcity-server</id>
+      <url>https://teamcity.devinfra.ru/app/dsl-plugins-repository</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
   </pluginRepositories>
 
   <build>
-    <sourceDirectory>${basedir}</sourceDirectory>
     <plugins>
       <plugin>
         <artifactId>kotlin-maven-plugin</artifactId>
         <groupId>org.jetbrains.kotlin</groupId>
         <version>${kotlin.version}</version>
 
-        <configuration/>
+        <configuration>
+          <sourceDirs>
+            <sourceDir>${basedir}/projects</sourceDir>
+            <sourceDir>${basedir}/settings.kts</sourceDir>
+          </sourceDirs>
+        </configuration>
         <executions>
           <execution>
             <id>compile</id>

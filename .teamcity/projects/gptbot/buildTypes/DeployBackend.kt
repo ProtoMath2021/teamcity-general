@@ -4,7 +4,7 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import projects.gptbot.vcsRoots.GptAgentApiGit
 
-object Deploy : BuildType({
+object DeployBackend : BuildType({
     id("Gptbot_Deploy")
     name = "Deploy_Backend"
 

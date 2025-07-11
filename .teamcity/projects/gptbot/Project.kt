@@ -7,11 +7,13 @@ import projects.gptbot.buildTypes.*
 object GptbotProject : Project({
     name = "Gptbot"
 
+    vcsRoot(WwhatsappNodeGit)
     vcsRoot(GptAgentApiGit)
     vcsRoot(GptAgentUiGit)
 
     buildType(Backend)
-    buildType(Deploy)
+    buildType(DeployBackend)
     buildType(DeployFrontend)
     buildType(Frontend)
+    buildType(WwhatsappNode)
 })
