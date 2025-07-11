@@ -56,4 +56,8 @@ object WwhatsappNode : BuildType({
             }
         }
     }
+
+    requirements {
+        equals("env.AGENT_TYPE", "nodejs-build")
+    }
 })
