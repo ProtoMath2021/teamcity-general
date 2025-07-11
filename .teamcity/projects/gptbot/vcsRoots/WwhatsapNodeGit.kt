@@ -6,7 +6,7 @@ object WwhatsappNodeGit : GitVcsRoot({
     id("Gptbot_WwhatsappNodeGit")
     name = "git@github.com:dev4team-ai/wwhatsapp-node.git"
     url = "git@github.com:dev4team-ai/wwhatsapp-node.git"
-    branch = "refs/heads/master"
+    branch = "refs/heads/main"
     authMethod = uploadedKey {
         userName = "git"
         uploadedKey = "wwhatsapp-node"
