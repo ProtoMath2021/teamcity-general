@@ -9,6 +9,6 @@ object GptbotHelmGit : GitVcsRoot({
     branch = "refs/heads/main"
     authMethod = password {
         userName = "teamcity"
-        password = "%vault:gptbot/github!pat%"
+        password = "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"
     }
 })
