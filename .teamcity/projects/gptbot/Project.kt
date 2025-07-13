@@ -10,6 +10,7 @@ object GptbotProject : Project({
     vcsRoot(WwhatsappNodeGit)
     vcsRoot(GptAgentApiGit)
     vcsRoot(GptAgentUiGit)
+    vcsRoot(GptbotHelmGit)
 
     buildType(Backend)
     buildType(DeployBackend)
