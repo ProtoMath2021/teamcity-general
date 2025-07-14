@@ -3,7 +3,6 @@ package patches.projects
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.Project
 import jetbrains.buildServer.configs.kotlin.projectFeatures.githubAppConnection
-import jetbrains.buildServer.configs.kotlin.projectFeatures.githubConnection
 import jetbrains.buildServer.configs.kotlin.ui.*
 
 /*
@@ -13,14 +12,6 @@ accordingly, and delete the patch script.
 */
 changeProject(RelativeId("GptbotProject")) {
     features {
-        add {
-            githubConnection {
-                id = "PROJECT_EXT_4"
-                displayName = "GitHub.com"
-                clientId = "Ov23lisNg0G3TiYaRBoR"
-                clientSecret = "zxx1048a660ecaee7c8c828abd62680e6e6322d8cabfc5029729adf59049d8a88607729d7739a719a27775d03cbe80d301b"
-            }
-        }
         add {
             githubAppConnection {
                 id = "PROJECT_EXT_5"
