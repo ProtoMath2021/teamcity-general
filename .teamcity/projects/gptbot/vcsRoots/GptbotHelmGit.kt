@@ -7,8 +7,8 @@ object GptbotHelmGit : GitVcsRoot({
     name = "https://github.com/dev4team-ai/gptbot-helm.git"
     url = "https://github.com/dev4team-ai/gptbot-helm.git"
     branch = "refs/heads/main"
-    authMethod = password {
+    authMethod = token {
         userName = "teamcity"
-        password = "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"
+        tokenId = "tc_token_id:CID_5d39b539391852e509211819e6a59e55:-1:d88865e4-c6a5-4310-82c8-96d3e7a31446"
     }
 })
