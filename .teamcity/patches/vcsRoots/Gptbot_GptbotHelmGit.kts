@@ -26,10 +26,11 @@ changeVcsRoot(RelativeId("Gptbot_GptbotHelmGit")) {
     }
 
     (this as GitVcsRoot).apply {
-        authMethod = password {
+        authMethod = token {
             userName = "teamcity"
-            password = "zxxac0b501ef9a679f4b938ec98ebb1eba7e083ec2ae7927636cd8a5c946e0e97e5a1f661febf147650248decbad477c5ba0a438dacb0f1ec092764b56e3e8e4685bf02ab55b31ed9e3e5dd864ab7549c2512b2688205b480ecdb5c0fd6c2f252a1"
+            tokenId = "tc_token_id:CID_5d39b539391852e509211819e6a59e55:-1:d88865e4-c6a5-4310-82c8-96d3e7a31446"
         }
+        param("secure:password", "")
     }
 
 }
