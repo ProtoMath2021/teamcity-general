@@ -93,8 +93,8 @@ object Deploy : BuildType({
                 
                 # Commit and push
                 git add "${'$'}IMAGE_VERSIONS_FILE"
-                git commit -m "Deploy ${'$'}APP_NAME to ${'$'}CLUSTER_NAME: ${'$'}ACTUAL_VERSION
-
+                git commit -m "Deploy ${'$'}APP_NAME to ${'$'}CLUSTER_NAME: %env.VERSION_TO_DEPLOY%"
+                
                 git push origin main
                 
                 echo "✅ Changes pushed successfully"
