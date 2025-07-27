@@ -195,90 +195,23 @@ object WwhatsappNode : BuildType({
                 """.trimIndent()
             }
         }
+        
         dockerCommand {
             name = "publish"
             commandType = push {
-                namesAndTags = """
-                    protonmath/wwhatsapp-node:%env.SEMANTIC_VERSION%
-                    protonmath/wwhatsapp-node:latest
-                """.trimIndent()
+                namesAndTags = "protonmath/wwhatsapp-node:%env.SEMANTIC_VERSION%"
             }
         }
-
-        // Create Git tag for main branch builds - ONLY after successful Docker publish
-        script {
-            name = "Create Git Tag"
-            enabled = false
-            scriptContent = """
-                #!/bin/bash
-                set -e
-                
-                echo "=== Creating Git Tag for Release ==="
-                echo "Current branch: %teamcity.build.branch%"
-                echo "Semantic version: %env.SEMANTIC_VERSION%"
-                
-                # Only create tags on main branch
-                BRANCH_REF="%teamcity.build.branch%"
-                BRANCH_NAME=${'$'}{BRANCH_REF#refs/heads/}
-                BRANCH_NAME=${'$'}{BRANCH_NAME#refs/tags/}
-                
-                if [ "${'$'}BRANCH_NAME" != "main" ] && [ "${'$'}BRANCH_NAME" != "master" ]; then
-                    echo "🚫 Not on main/master branch, skipping tag creation"
-                    exit 0
-                fi
-                
-                # Extract version without pre-release suffix for tagging
-                BASE_VERSION=$(echo "%env.SEMANTIC_VERSION%" | sed 's/-alpha.*//g')
-                TAG_NAME="v${'$'}BASE_VERSION"
-                
-                echo "Creating tag: ${'$'}TAG_NAME"
-                
-                # Configure git user for tagging
-                git config user.name "TeamCity Build Agent"
-                git config user.email "build@devinfra.ru"
-                
-                # Check if tag already exists
-                if git tag -l | grep -q "^${'$'}TAG_NAME${'$'}"; then
-                    echo "⚠️  Tag ${'$'}TAG_NAME already exists, skipping tag creation"
-                else
-                    # Create annotated tag
-                    git tag -a "${'$'}TAG_NAME" -m "Release ${'$'}TAG_NAME - Build #%build.number% - Docker: protonmath/wwhatsapp-node:${'$'}BASE_VERSION"
-                    echo "✅ Created tag: ${'$'}TAG_NAME"
-                    
-                    # Check authentication method and push accordingly
-                    if [ -n "%teamcity.build.vcs.auth.token%" ]; then
-                        echo "🔐 Using TeamCity VCS Auth Token from GitHub App connection"
-                        # Use HTTPS with VCS auth token
-                        REPO_URL="https://x-access-token:%teamcity.build.vcs.auth.token%@github.com/dev4team-ai/wwhatsapp-node.git"
-                        git remote add vcs-origin "${'$'}REPO_URL" 2>/dev/null || git remote set-url vcs-origin "${'$'}REPO_URL"
-                        git push vcs-origin "${'$'}TAG_NAME"
-                        git remote remove vcs-origin 2>/dev/null || true
-                        echo "🚀 Successfully pushed tag ${'$'}TAG_NAME using VCS Auth Token"
-                    elif [ -n "%env.GITHUB_TOKEN%" ]; then
-                        echo "🔐 Using GitHub token for authentication"
-                        # Use HTTPS with token
-                        REPO_URL="https://%env.GITHUB_TOKEN%@github.com/dev4team-ai/wwhatsapp-node.git"
-                        git remote add temp-origin "${'$'}REPO_URL" 2>/dev/null || git remote set-url temp-origin "${'$'}REPO_URL"
-                        git push temp-origin "${'$'}TAG_NAME"
-                        git remote remove temp-origin 2>/dev/null || true
-                        echo "🚀 Successfully pushed tag ${'$'}TAG_NAME using GitHub token"
-                    else
-                        echo "🔐 Attempting to use SSH key authentication"
-                        # Try SSH (might work if SSH key has push permissions)
-                        if git push origin "${'$'}TAG_NAME" 2>&1; then
-                            echo "� Successfully pushed tag ${'$'}TAG_NAME using SSH"
-                        else
-                            echo "❌ SSH push failed. Please ensure:"
-                            echo "   1. GitHub App (TeamCity101) has Contents: Write permission"
-                            echo "   2. VCS Auth Token is properly generated for this build"
-                            echo "   3. Alternative: Set GITHUB_TOKEN parameter with Personal Access Token"
-                            echo "   You can get a GitHub App token from: https://github.com/settings/apps/teamcity101"
-                            exit 1
-                        fi
-                    fi
-                    echo "📦 Tagged successful release: ${'$'}BASE_VERSION"
-                fi
-            """.trimIndent()
+        
+        // Publish latest tag only for main branch
+        dockerCommand {
+            name = "publish latest tag"
+            commandType = push {
+                namesAndTags = "protonmath/wwhatsapp-node:latest"
+            }
+            conditions {
+                matches("teamcity.build.branch", "refs/heads/(main|master)")
+            }
         }
     }
 
@@ -303,7 +236,6 @@ object WwhatsappNode : BuildType({
             branchFilter = """
                 +:refs/heads/main
                 +:refs/heads/master
-                +:*
             """.trimIndent()
         }
     }
