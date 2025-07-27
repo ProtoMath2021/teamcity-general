@@ -37,23 +37,11 @@ object Deploy : BuildType({
                 APP_NAME="%env.APP_NAME%"
                 CLUSTER_NAME="%env.CLUSTER_NAME%"
                 VERSION_TO_DEPLOY="%env.VERSION_TO_DEPLOY%"
-                DOCKER_VERSION="%reverse.dep.*.env.DOCKER_VERSION%"
                 IMAGE_VERSIONS_FILE="clusters/common/image-versions.yaml"
                 
                 echo "=== Deploy Configuration ==="
                 echo "Application: ${'$'}APP_NAME"
                 echo "Cluster: ${'$'}CLUSTER_NAME"
-                
-                # Determine version to deploy
-                if [ -z "${'$'}VERSION_TO_DEPLOY" ] && [ -n "${'$'}DOCKER_VERSION" ]; then
-                    VERSION_TO_DEPLOY="${'$'}DOCKER_VERSION"
-                    echo "Using Docker version from dependency: ${'$'}VERSION_TO_DEPLOY"
-                elif [ -n "${'$'}VERSION_TO_DEPLOY" ]; then
-                    echo "Using provided version: ${'$'}VERSION_TO_DEPLOY"
-                else
-                    echo "❌ Error: No version specified. Set VERSION_TO_DEPLOY or add dependency"
-                    exit 1
-                fi
                 
                 # Validate file exists
                 if [ ! -f "${'$'}IMAGE_VERSIONS_FILE" ]; then
