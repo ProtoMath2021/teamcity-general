@@ -2,6 +2,7 @@ package projects.gptbot.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerSupport
+import jetbrains.buildServer.configs.kotlin.buildFeatures.vcsLabeling
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
@@ -207,6 +208,7 @@ object WwhatsappNode : BuildType({
         // Create Git tag for main branch builds - ONLY after successful Docker publish
         script {
             name = "Create Git Tag"
+            enabled = false
             scriptContent = """
                 #!/bin/bash
                 set -e
@@ -292,6 +294,16 @@ object WwhatsappNode : BuildType({
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_3"
             }
+        }
+        
+        vcsLabeling {
+            vcsRootId = "${WwhatsappNodeGit.id}"
+            labelingPattern = "%env.SEMANTIC_VERSION%"
+            successfulOnly = true
+            branchFilter = """
+                +:refs/heads/main
+                +:refs/heads/master
+            """.trimIndent()
         }
     }
 
