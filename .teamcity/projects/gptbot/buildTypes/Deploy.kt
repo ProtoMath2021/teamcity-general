@@ -4,7 +4,7 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.ui.*
-import projects.gptbot.vcsRoots.GptbotHelmGit
+import projects.gptbot.vcsRoots.GptbotHelmGitSsh
 
 object Deploy : BuildType({
     id("GptbotProject_Deploy")
@@ -22,7 +22,7 @@ object Deploy : BuildType({
     }
 
     vcs {
-        root(GptbotHelmGit)
+        root(GptbotHelmGitSsh)
         cleanCheckout = true
     }
 
