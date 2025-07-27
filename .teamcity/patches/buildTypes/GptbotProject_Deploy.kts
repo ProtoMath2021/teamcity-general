@@ -25,5 +25,11 @@ changeBuildType(RelativeId("GptbotProject_Deploy")) {
             select("env.CLUSTER_NAME", "", label = "Target Cluster", description = "Select the cluster to deploy to", display = ParameterDisplay.PROMPT,
                     options = listOf("developing", "staging", "production"))
         }
+        expect {
+            param("env.VERSION_TO_DEPLOY", "")
+        }
+        update {
+            text("env.VERSION_TO_DEPLOY", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
+        }
     }
 }
