@@ -243,9 +243,37 @@ object WwhatsappNode : BuildType({
                     git tag -a "${'$'}TAG_NAME" -m "Release ${'$'}TAG_NAME - Build #%build.number% - Docker: protonmath/wwhatsapp-node:${'$'}BASE_VERSION"
                     echo "✅ Created tag: ${'$'}TAG_NAME"
                     
-                    # Push tag to remote
-                    git push origin "${'$'}TAG_NAME"
-                    echo "🚀 Pushed tag ${'$'}TAG_NAME to remote repository"
+                    # Check authentication method and push accordingly
+                    if [ -n "%teamcity.build.vcs.auth.token%" ]; then
+                        echo "🔐 Using TeamCity VCS Auth Token from GitHub App connection"
+                        # Use HTTPS with VCS auth token
+                        REPO_URL="https://x-access-token:%teamcity.build.vcs.auth.token%@github.com/dev4team-ai/wwhatsapp-node.git"
+                        git remote add vcs-origin "${'$'}REPO_URL" 2>/dev/null || git remote set-url vcs-origin "${'$'}REPO_URL"
+                        git push vcs-origin "${'$'}TAG_NAME"
+                        git remote remove vcs-origin 2>/dev/null || true
+                        echo "🚀 Successfully pushed tag ${'$'}TAG_NAME using VCS Auth Token"
+                    elif [ -n "%env.GITHUB_TOKEN%" ]; then
+                        echo "🔐 Using GitHub token for authentication"
+                        # Use HTTPS with token
+                        REPO_URL="https://%env.GITHUB_TOKEN%@github.com/dev4team-ai/wwhatsapp-node.git"
+                        git remote add temp-origin "${'$'}REPO_URL" 2>/dev/null || git remote set-url temp-origin "${'$'}REPO_URL"
+                        git push temp-origin "${'$'}TAG_NAME"
+                        git remote remove temp-origin 2>/dev/null || true
+                        echo "🚀 Successfully pushed tag ${'$'}TAG_NAME using GitHub token"
+                    else
+                        echo "🔐 Attempting to use SSH key authentication"
+                        # Try SSH (might work if SSH key has push permissions)
+                        if git push origin "${'$'}TAG_NAME" 2>&1; then
+                            echo "� Successfully pushed tag ${'$'}TAG_NAME using SSH"
+                        else
+                            echo "❌ SSH push failed. Please ensure:"
+                            echo "   1. GitHub App (TeamCity101) has Contents: Write permission"
+                            echo "   2. VCS Auth Token is properly generated for this build"
+                            echo "   3. Alternative: Set GITHUB_TOKEN parameter with Personal Access Token"
+                            echo "   You can get a GitHub App token from: https://github.com/settings/apps/teamcity101"
+                            exit 1
+                        fi
+                    fi
                     echo "📦 Tagged successful release: ${'$'}BASE_VERSION"
                 fi
             """.trimIndent()
