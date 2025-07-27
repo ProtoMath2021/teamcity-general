@@ -6,7 +6,7 @@ import jetbrains.buildServer.configs.kotlin.buildFeatures.vcsLabeling
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
-import projects.gptbot.vcsRoots.WwhatsappNodeGit
+import projects.gptbot.vcsRoots.WwhatsappNodeVcs
 
 object WwhatsappNode : BuildType({
     id("GptbotProject_WwhatsappNode")
@@ -19,7 +19,7 @@ object WwhatsappNode : BuildType({
     }
 
     vcs {
-        root(WwhatsappNodeGit)
+        root(WwhatsappNodeVcs)
 
         cleanCheckout = true
     }
@@ -297,12 +297,13 @@ object WwhatsappNode : BuildType({
         }
         
         vcsLabeling {
-            vcsRootId = "${WwhatsappNodeGit.id}"
-            labelingPattern = "%env.SEMANTIC_VERSION%"
+            vcsRootId = "${WwhatsappNodeVcs.id}"
+            labelingPattern = "v%env.SEMANTIC_VERSION%"
             successfulOnly = true
             branchFilter = """
                 +:refs/heads/main
                 +:refs/heads/master
+                +:*
             """.trimIndent()
         }
     }
