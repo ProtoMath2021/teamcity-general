@@ -27,6 +27,7 @@ object GptbotProject : Project({
     vcsRoot(GptAgentApiGit)
     vcsRoot(GptAgentUiGit)
     vcsRoot(GptbotHelmGit)
+    vcsRoot(GptbotHelmGitSsh)
 
     buildType(Backend)
     buildType(Deploy)
