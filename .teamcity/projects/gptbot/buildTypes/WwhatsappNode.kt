@@ -141,11 +141,11 @@ object WwhatsappNode : BuildType({
                         
                         if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
                             # Main branch: use next version + pre-release info
-                            SEMANTIC_VERSION="${'$'}NEW_VERSION-alpha.${'$'}COMMITS_SINCE_TAG+${'$'}COMMIT_HASH"
+                            SEMANTIC_VERSION="${'$'}NEW_VERSION-alpha.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
                         else
                             # Feature branch: include branch name
                             CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
-                            SEMANTIC_VERSION="${'$'}NEW_VERSION-${'$'}CLEAN_BRANCH_NAME.${'$'}COMMITS_SINCE_TAG+${'$'}COMMIT_HASH"
+                            SEMANTIC_VERSION="${'$'}NEW_VERSION-${'$'}CLEAN_BRANCH_NAME.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
                         fi
                     else
                         # No commits since tag, use the tag version
@@ -158,10 +158,10 @@ object WwhatsappNode : BuildType({
                     # No tags in repository, start with 0.1.0
                     COMMIT_HASH=$(git rev-parse --short HEAD)
                     if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
-                        SEMANTIC_VERSION="0.1.0-alpha.%build.number%+${'$'}COMMIT_HASH"
+                        SEMANTIC_VERSION="0.1.0-alpha.%build.number%-${'$'}COMMIT_HASH"
                     else
                         CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
-                        SEMANTIC_VERSION="0.1.0-${'$'}CLEAN_BRANCH_NAME.%build.number%+${'$'}COMMIT_HASH"
+                        SEMANTIC_VERSION="0.1.0-${'$'}CLEAN_BRANCH_NAME.%build.number%-${'$'}COMMIT_HASH"
                     fi
                     echo "🆕 No tags found, using initial version: ${'$'}SEMANTIC_VERSION"
                 fi
@@ -178,14 +178,14 @@ object WwhatsappNode : BuildType({
             """.trimIndent()
         }
 
-        // Docker build step - uses semantic version from Git tags
+        // Docker build step - uses semantic version (Docker-compatible)
         dockerCommand {
             name = "build image"
             commandType = build {
                 source = file {
                     path = "Dockerfile.optimized"
                 }
-                // Use semantic version from Git tags
+                // Use semantic version (now Docker-compatible)
                 namesAndTags = """
                     protonmath/wwhatsapp-node:%env.SEMANTIC_VERSION%
                     protonmath/wwhatsapp-node:latest
