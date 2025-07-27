@@ -212,9 +212,6 @@ object WwhatsappNode : BuildType({
     }
 
     requirements {
-        // More flexible agent requirements - any agent with Docker support
-        exists("docker.server.version")  // Requires Docker daemon
-        // Alternative: comment out the line below if you don't have agents with this specific type
-        // equals("env.AGENT_TYPE", "docker-build")
+        equals("env.AGENT_TYPE", "nodejs-build")
     }
 })
