@@ -11,6 +11,13 @@ accordingly, and delete the patch script.
 changeBuildType(RelativeId("GptbotProject_Deploy")) {
     params {
         expect {
+            param("env.APP_NAME", "wwhatsapp-app")
+        }
+        update {
+            select("env.APP_NAME", "",
+                    options = listOf("wwhatsapp-app", "gpt-agent-api", "gpt-agent-ui"))
+        }
+        expect {
             select("env.CLUSTER_NAME", "developing", label = "Target Cluster", description = "Select the cluster to deploy to",
                     options = listOf("developing", "staging", "production"))
         }
