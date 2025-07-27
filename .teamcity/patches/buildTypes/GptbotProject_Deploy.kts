@@ -11,5 +11,6 @@ accordingly, and delete the patch script.
 changeBuildType(RelativeId("GptbotProject_Deploy")) {
     vcs {
         remove(RelativeId("GptbotProject_GptbotHelmGit"))
+        add(RelativeId("GptbotProject_GptbotHelmGitSsh"))
     }
 }
