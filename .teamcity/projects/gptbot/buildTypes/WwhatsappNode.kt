@@ -3,7 +3,6 @@ package projects.gptbot.buildTypes
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerSupport
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
-import jetbrains.buildServer.configs.kotlin.buildSteps.nodeJS
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import projects.gptbot.vcsRoots.WwhatsappNodeGit
 
@@ -18,18 +17,12 @@ object WwhatsappNode : BuildType({
     }
 
     steps {
-        nodeJS {
-            name = "build"
-            shellScript = """
-                npm install
-                npm run build
-            """.trimIndent()
-        }
+        // Docker build step - Dockerfile.optimized handles dependency installation and building
         dockerCommand {
             name = "build image"
             commandType = build {
                 source = file {
-                    path = "Dockerfile"
+                    path = "Dockerfile.optimized"  // Use the optimized multi-stage Dockerfile
                 }
                 namesAndTags = "protonmath/wwhatsapp-node:%build.number%"
             }
@@ -58,6 +51,6 @@ object WwhatsappNode : BuildType({
     }
 
     requirements {
-        equals("env.AGENT_TYPE", "nodejs-build")
+        equals("env.AGENT_TYPE", "docker-build")  // Changed from nodejs-build to docker-build
     }
 })
