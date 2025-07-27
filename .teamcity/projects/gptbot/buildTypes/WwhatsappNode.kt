@@ -15,6 +15,7 @@ object WwhatsappNode : BuildType({
     // Set default parameter for semantic version
     params {
         param("env.SEMANTIC_VERSION", "0.0.0-dev")  // More predictable default
+        param("env.DOCKER_VERSION", "0.0.0-dev")    // Docker-compatible version
         param("env.USE_FALLBACK_VERSION", "false")  // Initialize fallback flag
         param("env.SKIP_SEMANTIC_RELEASE", "false")  // Initialize skip flag
         param("env.VERSION_SOURCE", "default")  // Track version source
@@ -330,10 +331,11 @@ EOF
                 DOCKER_VERSION=${'$'}{SEMANTIC_VERSION//+/-}  # Replace + with - for Docker compatibility
                 if [ "${'$'}DOCKER_VERSION" != "${'$'}SEMANTIC_VERSION" ]; then
                     echo "🐳 Docker-compatible version: ${'$'}DOCKER_VERSION"
-                    echo "##teamcity[setParameter name='env.DOCKER_VERSION' value='${'$'}DOCKER_VERSION']"
                 else
-                    echo "##teamcity[setParameter name='env.DOCKER_VERSION' value='${'$'}SEMANTIC_VERSION']"
+                    echo "🐳 Using semantic version as Docker version: ${'$'}DOCKER_VERSION"
                 fi
+                # Always set the DOCKER_VERSION parameter
+                echo "##teamcity[setParameter name='env.DOCKER_VERSION' value='${'$'}DOCKER_VERSION']"
                 
                 echo "✅ Version metadata set successfully"
                 echo "   Version: ${'$'}SEMANTIC_VERSION"
