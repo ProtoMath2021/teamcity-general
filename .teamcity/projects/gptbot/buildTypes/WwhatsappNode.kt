@@ -149,9 +149,44 @@ object WwhatsappNode : BuildType({
                         
                         if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
                             if [ "${'$'}HAS_RELEASE_COMMIT" = true ]; then
-                                # Release commit in repo without semantic tags - clean version with 'v' prefix
-                                SEMANTIC_VERSION="v0.1.0"
-                                echo "🆕 No semantic tags found, creating initial release version: ${'$'}SEMANTIC_VERSION"
+                                # Release commit in repo without semantic tags - check if v0.1.0 already exists
+                                PROPOSED_TAG="v0.1.0"
+                                
+                                if git rev-parse "${'$'}PROPOSED_TAG" >/dev/null 2>&1; then
+                                    # v0.1.0 already exists - check if it's this exact commit
+                                    EXISTING_TAG_COMMIT=$(git rev-parse "${'$'}PROPOSED_TAG^{commit}" 2>/dev/null || echo "")
+                                    CURRENT_COMMIT=$(git rev-parse HEAD)
+                                    
+                                    if [ "${'$'}EXISTING_TAG_COMMIT" = "${'$'}CURRENT_COMMIT" ]; then
+                                        # Same commit, use existing tag
+                                        SEMANTIC_VERSION="${'$'}PROPOSED_TAG"
+                                        echo "✅ Tag ${'$'}PROPOSED_TAG already exists for this commit"
+                                    else
+                                        # Different commit, find next available version
+                                        echo "⚠️  Tag ${'$'}PROPOSED_TAG already exists for different commit"
+                                        MINOR_VERSION=1
+                                        while git rev-parse "v0.${'$'}MINOR_VERSION.0" >/dev/null 2>&1; do
+                                            MINOR_VERSION=${'$'}((MINOR_VERSION + 1))
+                                            if [ ${'$'}MINOR_VERSION -gt 10 ]; then
+                                                echo "❌ Too many version conflicts, using pre-release format"
+                                                break
+                                            fi
+                                        done
+                                        
+                                        if [ ${'$'}MINOR_VERSION -le 10 ]; then
+                                            SEMANTIC_VERSION="v0.${'$'}MINOR_VERSION.0"
+                                            echo "🔄 Using available version: ${'$'}SEMANTIC_VERSION"
+                                        else
+                                            # Fallback to pre-release format
+                                            SEMANTIC_VERSION="0.1.0-release.%build.number%-${'$'}COMMIT_HASH"
+                                            echo "🚧 Fallback to pre-release: ${'$'}SEMANTIC_VERSION"
+                                        fi
+                                    fi
+                                else
+                                    # v0.1.0 doesn't exist, safe to use
+                                    SEMANTIC_VERSION="${'$'}PROPOSED_TAG"
+                                    echo "🆕 No semantic tags found, creating initial release version: ${'$'}SEMANTIC_VERSION"
+                                fi
                             else
                                 # No release commit - regular initial version
                                 SEMANTIC_VERSION="0.1.0"
@@ -188,6 +223,7 @@ object WwhatsappNode : BuildType({
                         
                         echo "📈 Version bump type: ${'$'}BUMP_TYPE"
                         echo "🔄 Next version would be: ${'$'}NEW_VERSION"
+                        echo "🏷️  Current reference tag: ${'$'}REFERENCE_TAG"
                         
                         # Check if any commit since last tag contains 'release:' message
                         HAS_RELEASE_COMMIT=false
@@ -200,24 +236,68 @@ object WwhatsappNode : BuildType({
                         done < <(git log --format="%s" ${'$'}{REFERENCE_TAG}..HEAD 2>/dev/null || echo "")
                         
                         if [ "${'$'}HAS_RELEASE_COMMIT" = true ]; then
-                            # Release commit found - use clean version with 'v' prefix
-                            SEMANTIC_VERSION="v${'$'}NEW_VERSION"
-                            echo "🏷️  Release version (clean): ${'$'}SEMANTIC_VERSION"
+                            # Release commit found - check if this version already exists
+                            PROPOSED_TAG="v${'$'}NEW_VERSION"
+                            
+                            # Check if the proposed tag already exists
+                            if git rev-parse "${'$'}PROPOSED_TAG" >/dev/null 2>&1; then
+                                # Tag already exists - check if it's this exact commit
+                                EXISTING_TAG_COMMIT=$(git rev-parse "${'$'}PROPOSED_TAG^{commit}" 2>/dev/null || echo "")
+                                CURRENT_COMMIT=$(git rev-parse HEAD)
+                                
+                                if [ "${'$'}EXISTING_TAG_COMMIT" = "${'$'}CURRENT_COMMIT" ]; then
+                                    # Same commit, use existing tag
+                                    SEMANTIC_VERSION="${'$'}PROPOSED_TAG"
+                                    echo "✅ Tag ${'$'}PROPOSED_TAG already exists for this commit"
+                                else
+                                    # Different commit, increment patch version until we find unused version
+                                    echo "⚠️  Tag ${'$'}PROPOSED_TAG already exists for different commit"
+                                    TEMP_VERSION="${'$'}NEW_VERSION"
+                                    COUNTER=0
+                                    while git rev-parse "v${'$'}TEMP_VERSION" >/dev/null 2>&1; do
+                                        COUNTER=${'$'}((COUNTER + 1))
+                                        TEMP_VERSION=$(increment_version "${'$'}NEW_VERSION" "patch")
+                                        NEW_VERSION="${'$'}TEMP_VERSION"
+                                        if [ ${'$'}COUNTER -gt 10 ]; then
+                                            echo "❌ Too many version conflicts, falling back to pre-release"
+                                            break
+                                        fi
+                                    done
+                                    
+                                    if [ ${'$'}COUNTER -le 10 ]; then
+                                        SEMANTIC_VERSION="v${'$'}TEMP_VERSION"
+                                        echo "🔄 Using available version: ${'$'}SEMANTIC_VERSION"
+                                    else
+                                        # Fallback to pre-release format
+                                        SEMANTIC_VERSION="${'$'}NEW_VERSION-release.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
+                                        echo "🚧 Fallback to pre-release: ${'$'}SEMANTIC_VERSION"
+                                    fi
+                                fi
+                            else
+                                # Tag doesn't exist, safe to use
+                                SEMANTIC_VERSION="${'$'}PROPOSED_TAG"
+                                echo "🏷️  Release version (clean): ${'$'}SEMANTIC_VERSION"
+                            fi
                         else
-                            # No release commit - use pre-release format
+                            # No release commit - use pre-release format with incremented version
+                            echo "🚧 Generating pre-release version using incremented version: ${'$'}NEW_VERSION"
                             if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
                                 # Main branch: use next version + pre-release info
                                 SEMANTIC_VERSION="${'$'}NEW_VERSION-alpha.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
+                                echo "🚧 Main branch pre-release: ${'$'}SEMANTIC_VERSION"
                             else
                                 # Feature branch: include branch name
                                 CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
                                 SEMANTIC_VERSION="${'$'}NEW_VERSION-${'$'}CLEAN_BRANCH_NAME.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
+                                echo "🚧 Feature branch pre-release: ${'$'}SEMANTIC_VERSION"
                             fi
                             echo "🚧 Pre-release version: ${'$'}SEMANTIC_VERSION"
                         fi
                     else
-                        # No commits since tag, use the tag version
+                        # No commits since tag, but this should not happen in normal CI
+                        # If we're here, use the tag version as-is (exact tag build)
                         SEMANTIC_VERSION=${'$'}{REFERENCE_TAG#v}
+                        echo "🏷️  Building exact tag: ${'$'}SEMANTIC_VERSION"
                     fi
                     
                 else
@@ -234,9 +314,44 @@ object WwhatsappNode : BuildType({
                     
                     if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
                         if [ "${'$'}HAS_RELEASE_COMMIT" = true ]; then
-                            # Release commit in fresh repo - clean version with 'v' prefix
-                            SEMANTIC_VERSION="v0.1.0"
-                            echo "🆕 No tags found, creating initial release version: ${'$'}SEMANTIC_VERSION"
+                            # Release commit in fresh repo - check if v0.1.0 already exists
+                            PROPOSED_TAG="v0.1.0"
+                            
+                            if git rev-parse "${'$'}PROPOSED_TAG" >/dev/null 2>&1; then
+                                # v0.1.0 already exists - check if it's this exact commit
+                                EXISTING_TAG_COMMIT=$(git rev-parse "${'$'}PROPOSED_TAG^{commit}" 2>/dev/null || echo "")
+                                CURRENT_COMMIT=$(git rev-parse HEAD)
+                                
+                                if [ "${'$'}EXISTING_TAG_COMMIT" = "${'$'}CURRENT_COMMIT" ]; then
+                                    # Same commit, use existing tag
+                                    SEMANTIC_VERSION="${'$'}PROPOSED_TAG"
+                                    echo "✅ Tag ${'$'}PROPOSED_TAG already exists for this commit"
+                                else
+                                    # Different commit, find next available version
+                                    echo "⚠️  Tag ${'$'}PROPOSED_TAG already exists for different commit"
+                                    MINOR_VERSION=1
+                                    while git rev-parse "v0.${'$'}MINOR_VERSION.0" >/dev/null 2>&1; do
+                                        MINOR_VERSION=${'$'}((MINOR_VERSION + 1))
+                                        if [ ${'$'}MINOR_VERSION -gt 10 ]; then
+                                            echo "❌ Too many version conflicts, using pre-release format"
+                                            break
+                                        fi
+                                    done
+                                    
+                                    if [ ${'$'}MINOR_VERSION -le 10 ]; then
+                                        SEMANTIC_VERSION="v0.${'$'}MINOR_VERSION.0"
+                                        echo "🔄 Using available version: ${'$'}SEMANTIC_VERSION"
+                                    else
+                                        # Fallback to pre-release format
+                                        SEMANTIC_VERSION="0.1.0-release.%build.number%-${'$'}COMMIT_HASH"
+                                        echo "🚧 Fallback to pre-release: ${'$'}SEMANTIC_VERSION"
+                                    fi
+                                fi
+                            else
+                                # v0.1.0 doesn't exist, safe to use
+                                SEMANTIC_VERSION="${'$'}PROPOSED_TAG"
+                                echo "🆕 No tags found, creating initial release version: ${'$'}SEMANTIC_VERSION"
+                            fi
                         else
                             # No release commit - regular initial version
                             SEMANTIC_VERSION="0.1.0"
@@ -311,7 +426,7 @@ object WwhatsappNode : BuildType({
         
         vcsLabeling {
             vcsRootId = "${WwhatsappNodeVcs.id}"
-            labelingPattern = "v%env.SEMANTIC_VERSION%"
+            labelingPattern = "%env.SEMANTIC_VERSION%"
             successfulOnly = true
             branchFilter = """
                 +:refs/heads/main
