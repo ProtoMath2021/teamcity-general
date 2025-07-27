@@ -3,6 +3,7 @@ package projects.gptbot.buildTypes
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.ui.*
 import projects.gptbot.vcsRoots.GptbotHelmGit
 
 object Deploy : BuildType({
@@ -20,6 +21,7 @@ object Deploy : BuildType({
              label = "Docker Version from Dependency", 
              description = "Docker version from the upstream build", 
              allowEmpty = true)
+        text("teamcity.build.number", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {
@@ -70,6 +72,7 @@ object Deploy : BuildType({
                 if grep -q "^${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE"; then
                     echo "Updating existing key..."
                     sed -i.bak "s/^${'$'}TAG_KEY:.*/${'$'}TAG_KEY: ${'$'}VERSION_TO_DEPLOY/" "${'$'}IMAGE_VERSIONS_FILE"
+                    rm -f "${'$'}IMAGE_VERSIONS_FILE.bak"
                 else
                     echo "Adding new key..."
                     echo "${'$'}TAG_KEY: ${'$'}VERSION_TO_DEPLOY" >> "${'$'}IMAGE_VERSIONS_FILE"
@@ -87,7 +90,6 @@ object Deploy : BuildType({
                 
                 APP_NAME="%env.APP_NAME%"
                 CLUSTER_NAME="%env.CLUSTER_NAME%"
-                ACTUAL_VERSION="%env.VERSION_TO_DEPLOY%"
                 IMAGE_VERSIONS_FILE="clusters/common/image-versions.yaml"
                 
                 # Configure git
