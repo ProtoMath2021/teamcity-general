@@ -76,7 +76,6 @@ object Deploy : BuildType({
                 fi
                 
                 echo "✅ Version updated successfully"
-                echo "##teamcity[setParameter name='env.ACTUAL_VERSION_DEPLOYED' value='${'$'}VERSION_TO_DEPLOY']"
             """.trimIndent()
         }
 
@@ -88,7 +87,7 @@ object Deploy : BuildType({
                 
                 APP_NAME="%env.APP_NAME%"
                 CLUSTER_NAME="%env.CLUSTER_NAME%"
-                ACTUAL_VERSION="%env.ACTUAL_VERSION_DEPLOYED%"
+                ACTUAL_VERSION="%env.VERSION_TO_DEPLOY%"
                 IMAGE_VERSIONS_FILE="clusters/common/image-versions.yaml"
                 
                 # Configure git
@@ -110,7 +109,6 @@ object Deploy : BuildType({
                 git commit -m "Deploy ${'$'}APP_NAME to ${'$'}CLUSTER_NAME: ${'$'}ACTUAL_VERSION
 
                 Build: %teamcity.build.number%
-                Agent: %agent.name%"
                 
                 git push origin main
                 
