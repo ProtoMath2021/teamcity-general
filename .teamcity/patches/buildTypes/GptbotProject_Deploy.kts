@@ -22,7 +22,7 @@ changeBuildType(RelativeId("GptbotProject_Deploy")) {
                     options = listOf("developing", "staging", "production"))
         }
         update {
-            select("env.CLUSTER_NAME", "", label = "Target Cluster", description = "Select the cluster to deploy to", display = ParameterDisplay.PROMPT,
+            select("env.CLUSTER_NAME", "staging", label = "Target Cluster", description = "Select the cluster to deploy to", display = ParameterDisplay.PROMPT,
                     options = listOf("developing", "staging", "production"))
         }
         expect {
