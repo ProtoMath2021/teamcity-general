@@ -126,16 +126,65 @@ object WwhatsappNode : BuildType({
                 elif git describe --tags --abbrev=0 2>/dev/null; then
                     # We have tags in history, analyze commits to increment version
                     LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
-                    COMMIT_HASH=$(git rev-parse --short HEAD)
-                    COMMITS_SINCE_TAG=$(git rev-list ${'$'}{LATEST_TAG}..HEAD --count)
                     
-                    echo "📋 Latest tag: ${'$'}LATEST_TAG"
+                    # Filter to get only semantic version tags (v1.2.3 format), ignore pre-release tags
+                    SEMANTIC_TAG=$(git tag -l | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+${'$'}' | sort -V | tail -1)
+                    
+                    if [ -n "${'$'}SEMANTIC_TAG" ]; then
+                        # Use the latest semantic version tag as reference
+                        REFERENCE_TAG="${'$'}SEMANTIC_TAG"
+                        echo "📋 Latest semantic tag: ${'$'}REFERENCE_TAG"
+                    else
+                        # No semantic tags found, treat as fresh repository
+                        echo "📋 No semantic version tags found (found: ${'$'}LATEST_TAG)"
+                        COMMIT_HASH=$(git rev-parse --short HEAD)
+                        
+                        # Check if current commit is a release commit in fresh repository
+                        HAS_RELEASE_COMMIT=false
+                        CURRENT_COMMIT_MSG=$(git log -1 --format="%s" HEAD 2>/dev/null || echo "")
+                        if [[ ${'$'}CURRENT_COMMIT_MSG =~ ^release: ]]; then
+                            HAS_RELEASE_COMMIT=true
+                            echo "🎯 RELEASE commit detected in repository without semantic tags: ${'$'}CURRENT_COMMIT_MSG"
+                        fi
+                        
+                        if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
+                            if [ "${'$'}HAS_RELEASE_COMMIT" = true ]; then
+                                # Release commit in repo without semantic tags - clean version with 'v' prefix
+                                SEMANTIC_VERSION="v0.1.0"
+                                echo "🆕 No semantic tags found, creating initial release version: ${'$'}SEMANTIC_VERSION"
+                            else
+                                # No release commit - regular initial version
+                                SEMANTIC_VERSION="0.1.0"
+                                echo "🆕 No semantic tags found, using initial version: ${'$'}SEMANTIC_VERSION"
+                            fi
+                        else
+                            CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
+                            SEMANTIC_VERSION="0.1.0-${'$'}CLEAN_BRANCH_NAME.%build.number%-${'$'}COMMIT_HASH"
+                            echo "🆕 No semantic tags found, using initial version: ${'$'}SEMANTIC_VERSION"
+                        fi
+                        
+                        # Exit this branch since we handled the no-semantic-tags case
+                        echo "=== Final Result ==="
+                        echo "🏷️  Semantic Version: ${'$'}SEMANTIC_VERSION"
+                        echo "##teamcity[setParameter name='env.SEMANTIC_VERSION' value='${'$'}SEMANTIC_VERSION']"
+                        
+                        # Also set individual version parts for reference
+                        IFS='.' read -ra VERSION_PARTS <<< "${'$'}{SEMANTIC_VERSION%%-*}"
+                        echo "##teamcity[setParameter name='env.VERSION_MAJOR' value='${'$'}{VERSION_PARTS[0]:-0}']"
+                        echo "##teamcity[setParameter name='env.VERSION_MINOR' value='${'$'}{VERSION_PARTS[1]:-0}']"
+                        echo "##teamcity[setParameter name='env.VERSION_PATCH' value='${'$'}{VERSION_PARTS[2]:-0}']"
+                        exit 0
+                    fi
+                    
+                    COMMIT_HASH=$(git rev-parse --short HEAD)
+                    COMMITS_SINCE_TAG=$(git rev-list ${'$'}{REFERENCE_TAG}..HEAD --count)
+                    
                     echo "🔢 Commits since tag: ${'$'}COMMITS_SINCE_TAG"
                     
                     if [ ${'$'}COMMITS_SINCE_TAG -gt 0 ]; then
                         # Analyze commits to determine version bump
-                        BUMP_TYPE=$(analyze_commits "${'$'}LATEST_TAG")
-                        NEW_VERSION=$(increment_version "${'$'}LATEST_TAG" "${'$'}BUMP_TYPE")
+                        BUMP_TYPE=$(analyze_commits "${'$'}REFERENCE_TAG")
+                        NEW_VERSION=$(increment_version "${'$'}REFERENCE_TAG" "${'$'}BUMP_TYPE")
                         
                         echo "📈 Version bump type: ${'$'}BUMP_TYPE"
                         echo "🔄 Next version would be: ${'$'}NEW_VERSION"
@@ -148,7 +197,7 @@ object WwhatsappNode : BuildType({
                                 echo "🎯 RELEASE commit detected: ${'$'}commit_msg"
                                 break
                             fi
-                        done < <(git log --format="%s" ${'$'}{LATEST_TAG}..HEAD 2>/dev/null || echo "")
+                        done < <(git log --format="%s" ${'$'}{REFERENCE_TAG}..HEAD 2>/dev/null || echo "")
                         
                         if [ "${'$'}HAS_RELEASE_COMMIT" = true ]; then
                             # Release commit found - use clean version with 'v' prefix
@@ -168,7 +217,7 @@ object WwhatsappNode : BuildType({
                         fi
                     else
                         # No commits since tag, use the tag version
-                        SEMANTIC_VERSION=${'$'}{LATEST_TAG#v}
+                        SEMANTIC_VERSION=${'$'}{REFERENCE_TAG#v}
                     fi
                     
                 else
