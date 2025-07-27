@@ -77,6 +77,13 @@ object Deploy : BuildType({
                 CLUSTER_NAME="%env.CLUSTER_NAME%"
                 IMAGE_VERSIONS_FILE="clusters/common/image-versions.yaml"
                 
+                # Configure SSH to accept GitHub's host key
+                mkdir -p ~/.ssh
+                ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+                
+                # Alternative: Configure SSH to skip host key checking (less secure)
+                # export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
+                
                 # Configure git
                 git config user.name "TeamCity"
                 git config user.email "teamcity@dev4team.ai"
