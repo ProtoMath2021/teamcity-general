@@ -11,17 +11,14 @@ object Deploy : BuildType({
     name = "Deploy"
 
     params {
-        param("env.APP_NAME", "wwhatsapp-app")
-        select("env.CLUSTER_NAME", "developing", 
+        select("env.APP_NAME", "", display = ParameterDisplay.PROMPT,
+                options = listOf("wwhatsapp-app", "gpt-agent-api", "gpt-agent-ui"))
+        select("env.CLUSTER_NAME", "staging", 
                label = "Target Cluster", 
-               description = "Select the cluster to deploy to",
+               description = "Select the cluster to deploy to", 
+               display = ParameterDisplay.PROMPT,
                options = listOf("developing", "staging", "production"))
-        param("env.VERSION_TO_DEPLOY", "")
-        text("reverse.dep.*.env.DOCKER_VERSION", "", 
-             label = "Docker Version from Dependency", 
-             description = "Docker version from the upstream build", 
-             allowEmpty = true)
-        text("teamcity.build.number", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
+        text("env.VERSION_TO_DEPLOY", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {
@@ -110,8 +107,6 @@ object Deploy : BuildType({
                 git add "${'$'}IMAGE_VERSIONS_FILE"
                 git commit -m "Deploy ${'$'}APP_NAME to ${'$'}CLUSTER_NAME: ${'$'}ACTUAL_VERSION
 
-                Build: %teamcity.build.number%
-                
                 git push origin main
                 
                 echo "✅ Changes pushed successfully"
@@ -119,8 +114,4 @@ object Deploy : BuildType({
         }
     }
 
-    requirements {
-        exists("git")
-        contains("env.AGENT_TYPE", "general-build")
-    }
 })
