@@ -158,12 +158,14 @@ object WwhatsappNode : BuildType({
                     # No tags in repository, start with 0.1.0
                     COMMIT_HASH=$(git rev-parse --short HEAD)
                     if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
-                        SEMANTIC_VERSION="0.1.0-alpha.%build.number%-${'$'}COMMIT_HASH"
+                        # For main branch, create a clean initial version that will be tagged
+                        SEMANTIC_VERSION="0.1.0"
+                        echo "🆕 No tags found, will create initial release version: ${'$'}SEMANTIC_VERSION"
                     else
                         CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
                         SEMANTIC_VERSION="0.1.0-${'$'}CLEAN_BRANCH_NAME.%build.number%-${'$'}COMMIT_HASH"
+                        echo "🆕 No tags found, using initial version: ${'$'}SEMANTIC_VERSION"
                     fi
-                    echo "🆕 No tags found, using initial version: ${'$'}SEMANTIC_VERSION"
                 fi
                 
                 echo "=== Final Result ==="
@@ -200,6 +202,53 @@ object WwhatsappNode : BuildType({
                     protonmath/wwhatsapp-node:latest
                 """.trimIndent()
             }
+        }
+
+        // Create Git tag for main branch builds - ONLY after successful Docker publish
+        script {
+            name = "Create Git Tag"
+            scriptContent = """
+                #!/bin/bash
+                set -e
+                
+                echo "=== Creating Git Tag for Release ==="
+                echo "Current branch: %teamcity.build.branch%"
+                echo "Semantic version: %env.SEMANTIC_VERSION%"
+                
+                # Only create tags on main branch
+                BRANCH_REF="%teamcity.build.branch%"
+                BRANCH_NAME=${'$'}{BRANCH_REF#refs/heads/}
+                BRANCH_NAME=${'$'}{BRANCH_NAME#refs/tags/}
+                
+                if [ "${'$'}BRANCH_NAME" != "main" ] && [ "${'$'}BRANCH_NAME" != "master" ]; then
+                    echo "🚫 Not on main/master branch, skipping tag creation"
+                    exit 0
+                fi
+                
+                # Extract version without pre-release suffix for tagging
+                BASE_VERSION=$(echo "%env.SEMANTIC_VERSION%" | sed 's/-alpha.*//g')
+                TAG_NAME="v${'$'}BASE_VERSION"
+                
+                echo "Creating tag: ${'$'}TAG_NAME"
+                
+                # Configure git user for tagging
+                git config user.name "TeamCity Build Agent"
+                git config user.email "build@devinfra.ru"
+                
+                # Check if tag already exists
+                if git tag -l | grep -q "^${'$'}TAG_NAME${'$'}"; then
+                    echo "⚠️  Tag ${'$'}TAG_NAME already exists, skipping tag creation"
+                else
+                    # Create annotated tag
+                    git tag -a "${'$'}TAG_NAME" -m "Release ${'$'}TAG_NAME - Build #%build.number% - Docker: protonmath/wwhatsapp-node:${'$'}BASE_VERSION"
+                    echo "✅ Created tag: ${'$'}TAG_NAME"
+                    
+                    # Push tag to remote
+                    git push origin "${'$'}TAG_NAME"
+                    echo "🚀 Pushed tag ${'$'}TAG_NAME to remote repository"
+                    echo "📦 Tagged successful release: ${'$'}BASE_VERSION"
+                fi
+            """.trimIndent()
         }
     }
 
