@@ -14,7 +14,7 @@ changeBuildType(RelativeId("GptbotProject_Deploy")) {
             param("env.APP_NAME", "wwhatsapp-app")
         }
         update {
-            select("env.APP_NAME", "",
+            select("env.APP_NAME", "", display = ParameterDisplay.PROMPT,
                     options = listOf("wwhatsapp-app", "gpt-agent-api", "gpt-agent-ui"))
         }
         expect {
