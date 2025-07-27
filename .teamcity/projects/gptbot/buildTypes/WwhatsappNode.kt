@@ -140,28 +140,59 @@ object WwhatsappNode : BuildType({
                         echo "📈 Version bump type: ${'$'}BUMP_TYPE"
                         echo "🔄 Next version would be: ${'$'}NEW_VERSION"
                         
-                        if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
-                            # Main branch: use next version + pre-release info
-                            SEMANTIC_VERSION="${'$'}NEW_VERSION-alpha.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
+                        # Check if any commit since last tag contains 'release:' message
+                        HAS_RELEASE_COMMIT=false
+                        while IFS= read -r commit_msg; do
+                            if [[ ${'$'}commit_msg =~ ^release: ]]; then
+                                HAS_RELEASE_COMMIT=true
+                                echo "🎯 RELEASE commit detected: ${'$'}commit_msg"
+                                break
+                            fi
+                        done < <(git log --format="%s" ${'$'}{LATEST_TAG}..HEAD 2>/dev/null || echo "")
+                        
+                        if [ "${'$'}HAS_RELEASE_COMMIT" = true ]; then
+                            # Release commit found - use clean version with 'v' prefix
+                            SEMANTIC_VERSION="v${'$'}NEW_VERSION"
+                            echo "🏷️  Release version (clean): ${'$'}SEMANTIC_VERSION"
                         else
-                            # Feature branch: include branch name
-                            CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
-                            SEMANTIC_VERSION="${'$'}NEW_VERSION-${'$'}CLEAN_BRANCH_NAME.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
+                            # No release commit - use pre-release format
+                            if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
+                                # Main branch: use next version + pre-release info
+                                SEMANTIC_VERSION="${'$'}NEW_VERSION-alpha.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
+                            else
+                                # Feature branch: include branch name
+                                CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
+                                SEMANTIC_VERSION="${'$'}NEW_VERSION-${'$'}CLEAN_BRANCH_NAME.${'$'}COMMITS_SINCE_TAG-${'$'}COMMIT_HASH"
+                            fi
+                            echo "🚧 Pre-release version: ${'$'}SEMANTIC_VERSION"
                         fi
                     else
                         # No commits since tag, use the tag version
                         SEMANTIC_VERSION=${'$'}{LATEST_TAG#v}
                     fi
                     
-                    echo "🚧 Pre-release version: ${'$'}SEMANTIC_VERSION"
-                    
                 else
                     # No tags in repository, start with 0.1.0
                     COMMIT_HASH=$(git rev-parse --short HEAD)
+                    
+                    # Check if current commit is a release commit in fresh repository
+                    HAS_RELEASE_COMMIT=false
+                    CURRENT_COMMIT_MSG=$(git log -1 --format="%s" HEAD 2>/dev/null || echo "")
+                    if [[ ${'$'}CURRENT_COMMIT_MSG =~ ^release: ]]; then
+                        HAS_RELEASE_COMMIT=true
+                        echo "🎯 RELEASE commit detected in fresh repository: ${'$'}CURRENT_COMMIT_MSG"
+                    fi
+                    
                     if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
-                        # For main branch, create a clean initial version that will be tagged
-                        SEMANTIC_VERSION="0.1.0"
-                        echo "🆕 No tags found, will create initial release version: ${'$'}SEMANTIC_VERSION"
+                        if [ "${'$'}HAS_RELEASE_COMMIT" = true ]; then
+                            # Release commit in fresh repo - clean version with 'v' prefix
+                            SEMANTIC_VERSION="v0.1.0"
+                            echo "🆕 No tags found, creating initial release version: ${'$'}SEMANTIC_VERSION"
+                        else
+                            # No release commit - regular initial version
+                            SEMANTIC_VERSION="0.1.0"
+                            echo "🆕 No tags found, using initial version: ${'$'}SEMANTIC_VERSION"
+                        fi
                     else
                         CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
                         SEMANTIC_VERSION="0.1.0-${'$'}CLEAN_BRANCH_NAME.%build.number%-${'$'}COMMIT_HASH"
