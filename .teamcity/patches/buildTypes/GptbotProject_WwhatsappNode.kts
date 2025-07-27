@@ -11,5 +11,6 @@ accordingly, and delete the patch script.
 changeBuildType(RelativeId("GptbotProject_WwhatsappNode")) {
     vcs {
         remove(RelativeId("Gptbot_WwhatsappNodeGit"))
+        add(RelativeId("GptbotProject_WwhatsappNodeVcs"))
     }
 }
