@@ -81,24 +81,24 @@ object WwhatsappNode : BuildType({
                     local has_feat=false
                     local has_fix=false
                     
-                    echo "🔍 Analyzing commits since ${'$'}since_ref..."
+                    echo "🔍 Analyzing commits since ${'$'}since_ref..." >&2
                     
                     # Get all commit messages since the reference
                     while IFS= read -r commit_msg; do
-                        echo "  📝 Commit: ${'$'}commit_msg"
+                        echo "  📝 Commit: ${'$'}commit_msg" >&2
                         
                         # Check for breaking changes (BREAKING CHANGE or release:)
                         if [[ ${'$'}commit_msg =~ ^release:|^BREAKING[[:space:]]CHANGE:|!: ]]; then
                             has_breaking=true
-                            echo "    🔥 BREAKING CHANGE detected"
+                            echo "    🔥 BREAKING CHANGE detected" >&2
                         # Check for features (feat:)
                         elif [[ ${'$'}commit_msg =~ ^feat(\(.+\))?[[:space:]]*: ]]; then
                             has_feat=true
-                            echo "    ✨ Feature detected"
+                            echo "    ✨ Feature detected" >&2
                         # Check for fixes and other changes
                         elif [[ ${'$'}commit_msg =~ ^(fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?[[:space:]]*: ]]; then
                             has_fix=true
-                            echo "    🐛 Fix/Other change detected"
+                            echo "    🐛 Fix/Other change detected" >&2
                         fi
                     done < <(git log --format="%s" ${'$'}{since_ref}..HEAD 2>/dev/null || echo "")
                     
