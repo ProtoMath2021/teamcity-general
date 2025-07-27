@@ -14,6 +14,7 @@ object WwhatsappNode : BuildType({
     // Set default parameter for semantic version
     params {
         param("env.SEMANTIC_VERSION", "dev-%build.number%")  // Default fallback
+        param("teamcity.build.branch", "%teamcity.build.vcs.branch%")  // Current VCS branch
     }
 
     vcs {
@@ -212,6 +213,9 @@ object WwhatsappNode : BuildType({
     }
 
     requirements {
-        equals("env.AGENT_TYPE", "nodejs-build")
+        // Require Docker capability for building and pushing images
+        exists("docker.server.version")
+        // Prefer nodejs-build agents but allow any agent with Docker
+        // equals("env.AGENT_TYPE", "nodejs-build")
     }
 })
