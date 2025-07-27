@@ -95,8 +95,8 @@ object Deploy : BuildType({
                 git add "${'$'}IMAGE_VERSIONS_FILE"
                 git commit -m "Deploy ${'$'}APP_NAME to ${'$'}CLUSTER_NAME: %env.VERSION_TO_DEPLOY%"
                 
-                # Push using the same token as configured in VCS root
-                git push https://oauth2:%secure:CID_5d39b539391852e509211819e6a59e55%@github.com/dev4team-ai/gptbot-helm.git HEAD:main
+                # Push using token authentication (similar to personal access token approach)
+                git push https://oauth2:%secure:CID_5d39b539391852e509211819e6a59e55%@github.com/dev4team-ai/gptbot-helm.git
                 
                 echo "✅ Changes pushed successfully"
             """.trimIndent()
