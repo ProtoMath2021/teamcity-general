@@ -14,7 +14,7 @@ object WwhatsappNode : BuildType({
     // Set default parameter for semantic version
     params {
         param("env.SEMANTIC_VERSION", "dev-%build.number%")  // Default fallback
-        param("teamcity.build.branch", "%teamcity.build.vcs.branch%")  // Current VCS branch
+        param("teamcity.build.branch", "refs/heads/main")  // Configurable build branch, defaults to main
     }
 
     vcs {
@@ -32,8 +32,14 @@ object WwhatsappNode : BuildType({
                 set -e
                 
                 echo "=== Git Tag Version Extraction with Conventional Commits ==="
-                echo "Current branch: %teamcity.build.branch%"
+                echo "Current branch ref: %teamcity.build.branch%"
                 echo "Current commit: $(git rev-parse HEAD)"
+                
+                # Extract branch name from refs (remove refs/heads/ or refs/tags/ prefix)
+                BRANCH_REF="%teamcity.build.branch%"
+                BRANCH_NAME=${'$'}{BRANCH_REF#refs/heads/}
+                BRANCH_NAME=${'$'}{BRANCH_NAME#refs/tags/}
+                echo "Branch name: ${'$'}BRANCH_NAME"
                 
                 # Function to increment version based on type
                 increment_version() {
@@ -133,13 +139,13 @@ object WwhatsappNode : BuildType({
                         echo "📈 Version bump type: ${'$'}BUMP_TYPE"
                         echo "🔄 Next version would be: ${'$'}NEW_VERSION"
                         
-                        if [ "%teamcity.build.branch%" = "main" ] || [ "%teamcity.build.branch%" = "master" ]; then
+                        if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
                             # Main branch: use next version + pre-release info
                             SEMANTIC_VERSION="${'$'}NEW_VERSION-alpha.${'$'}COMMITS_SINCE_TAG+${'$'}COMMIT_HASH"
                         else
                             # Feature branch: include branch name
-                            BRANCH_NAME=$(echo "%teamcity.build.branch%" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
-                            SEMANTIC_VERSION="${'$'}NEW_VERSION-${'$'}BRANCH_NAME.${'$'}COMMITS_SINCE_TAG+${'$'}COMMIT_HASH"
+                            CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
+                            SEMANTIC_VERSION="${'$'}NEW_VERSION-${'$'}CLEAN_BRANCH_NAME.${'$'}COMMITS_SINCE_TAG+${'$'}COMMIT_HASH"
                         fi
                     else
                         # No commits since tag, use the tag version
@@ -151,11 +157,11 @@ object WwhatsappNode : BuildType({
                 else
                     # No tags in repository, start with 0.1.0
                     COMMIT_HASH=$(git rev-parse --short HEAD)
-                    if [ "%teamcity.build.branch%" = "main" ] || [ "%teamcity.build.branch%" = "master" ]; then
+                    if [ "${'$'}BRANCH_NAME" = "main" ] || [ "${'$'}BRANCH_NAME" = "master" ]; then
                         SEMANTIC_VERSION="0.1.0-alpha.%build.number%+${'$'}COMMIT_HASH"
                     else
-                        BRANCH_NAME=$(echo "%teamcity.build.branch%" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
-                        SEMANTIC_VERSION="0.1.0-${'$'}BRANCH_NAME.%build.number%+${'$'}COMMIT_HASH"
+                        CLEAN_BRANCH_NAME=$(echo "${'$'}BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
+                        SEMANTIC_VERSION="0.1.0-${'$'}CLEAN_BRANCH_NAME.%build.number%+${'$'}COMMIT_HASH"
                     fi
                     echo "🆕 No tags found, using initial version: ${'$'}SEMANTIC_VERSION"
                 fi
