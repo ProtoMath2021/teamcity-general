@@ -3,6 +3,7 @@ package projects.gptbot.buildTypes
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.vcsLabeling
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
+import jetbrains.buildServer.configs.kotlin.buildFeatures.dockerSupport
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import projects.gptbot.vcsRoots.WwhatsappNodeVcs
@@ -95,11 +96,11 @@ object WwhatsappNode : BuildType({
     }
 
     features {
-        feature {
-            type = "DockerSupport"
-            param("cleanupPushedImages", "true")
-            param("loginToRegistry", "on")
-            param("dockerRegistryId", "PROJECT_EXT_3")
+        dockerSupport {
+            cleanupPushedImages = true
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_3"
+            }
         }
         
         vcsLabeling {
