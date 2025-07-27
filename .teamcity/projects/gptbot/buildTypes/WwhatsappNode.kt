@@ -11,6 +11,11 @@ object WwhatsappNode : BuildType({
     id("GptbotProject_WwhatsappNode")
     name = "wwhatsapp-node"
 
+    // Set default parameter for semantic version
+    params {
+        param("env.SEMANTIC_VERSION", "dev-%build.number%")  // Default fallback
+    }
+
     vcs {
         root(WwhatsappNodeGit)
 
@@ -18,36 +23,162 @@ object WwhatsappNode : BuildType({
     }
 
     steps {
-        // Extract semantic version from package.json
+        // Extract semantic version from Git tags with commit-based version increment
         script {
-            name = "Extract Semantic Version"
+            name = "Extract Git Tag Version"
             scriptContent = """
                 #!/bin/bash
                 set -e
                 
-                # Get version from package.json and add git commit hash
-                if [ -f "package.json" ]; then
-                    PACKAGE_VERSION=${'$'}(node -p "require('./package.json').version")
-                    GIT_HASH=${'$'}(git rev-parse --short HEAD)
-                    SEMANTIC_VERSION="${'$'}PACKAGE_VERSION-${'$'}GIT_HASH"
+                echo "=== Git Tag Version Extraction with Conventional Commits ==="
+                echo "Current branch: %teamcity.build.branch%"
+                echo "Current commit: $(git rev-parse HEAD)"
+                
+                # Function to increment version based on type
+                increment_version() {
+                    local version=${'$'}1
+                    local bump_type=${'$'}2
+                    
+                    # Parse current version (remove 'v' prefix if present)
+                    version=${'$'}{version#v}
+                    
+                    # Split version into parts
+                    IFS='.' read -ra VERSION_PARTS <<< "${'$'}version"
+                    local major=${'$'}{VERSION_PARTS[0]:-0}
+                    local minor=${'$'}{VERSION_PARTS[1]:-0}
+                    local patch=${'$'}{VERSION_PARTS[2]:-0}
+                    
+                    case ${'$'}bump_type in
+                        "major")
+                            major=${'$'}((major + 1))
+                            minor=0
+                            patch=0
+                            ;;
+                        "minor")
+                            minor=${'$'}((minor + 1))
+                            patch=0
+                            ;;
+                        "patch")
+                            patch=${'$'}((patch + 1))
+                            ;;
+                    esac
+                    
+                    echo "${'$'}major.${'$'}minor.${'$'}patch"
+                }
+                
+                # Function to analyze commit messages and determine version bump
+                analyze_commits() {
+                    local since_ref=${'$'}1
+                    local has_breaking=false
+                    local has_feat=false
+                    local has_fix=false
+                    
+                    echo "🔍 Analyzing commits since ${'$'}since_ref..."
+                    
+                    # Get all commit messages since the reference
+                    while IFS= read -r commit_msg; do
+                        echo "  📝 Commit: ${'$'}commit_msg"
+                        
+                        # Check for breaking changes (BREAKING CHANGE or release:)
+                        if [[ ${'$'}commit_msg =~ ^release:|^BREAKING[[:space:]]CHANGE:|!: ]]; then
+                            has_breaking=true
+                            echo "    🔥 BREAKING CHANGE detected"
+                        # Check for features (feat:)
+                        elif [[ ${'$'}commit_msg =~ ^feat(\(.+\))?[[:space:]]*: ]]; then
+                            has_feat=true
+                            echo "    ✨ Feature detected"
+                        # Check for fixes and other changes
+                        elif [[ ${'$'}commit_msg =~ ^(fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?[[:space:]]*: ]]; then
+                            has_fix=true
+                            echo "    🐛 Fix/Other change detected"
+                        fi
+                    done < <(git log --format="%s" ${'$'}{since_ref}..HEAD 2>/dev/null || echo "")
+                    
+                    # Determine version bump priority: major > minor > patch
+                    if [ "${'$'}has_breaking" = true ]; then
+                        echo "major"
+                    elif [ "${'$'}has_feat" = true ]; then
+                        echo "minor"
+                    elif [ "${'$'}has_fix" = true ]; then
+                        echo "patch"
+                    else
+                        echo "patch"  # Default to patch for any changes
+                    fi
+                }
+                
+                # Check if current commit has a tag
+                if git describe --tags --exact-match HEAD 2>/dev/null; then
+                    # We're building from a tagged commit (release)
+                    TAG_VERSION=$(git describe --tags --exact-match HEAD 2>/dev/null)
+                    # Remove 'v' prefix if present (v1.2.3 -> 1.2.3)
+                    SEMANTIC_VERSION=${'$'}{TAG_VERSION#v}
+                    echo "✅ Found exact Git tag: ${'$'}TAG_VERSION"
+                    echo "📦 Release version: ${'$'}SEMANTIC_VERSION"
+                    
+                elif git describe --tags --abbrev=0 2>/dev/null; then
+                    # We have tags in history, analyze commits to increment version
+                    LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+                    COMMIT_HASH=$(git rev-parse --short HEAD)
+                    COMMITS_SINCE_TAG=$(git rev-list ${'$'}{LATEST_TAG}..HEAD --count)
+                    
+                    echo "📋 Latest tag: ${'$'}LATEST_TAG"
+                    echo "🔢 Commits since tag: ${'$'}COMMITS_SINCE_TAG"
+                    
+                    if [ ${'$'}COMMITS_SINCE_TAG -gt 0 ]; then
+                        # Analyze commits to determine version bump
+                        BUMP_TYPE=$(analyze_commits "${'$'}LATEST_TAG")
+                        NEW_VERSION=$(increment_version "${'$'}LATEST_TAG" "${'$'}BUMP_TYPE")
+                        
+                        echo "📈 Version bump type: ${'$'}BUMP_TYPE"
+                        echo "🔄 Next version would be: ${'$'}NEW_VERSION"
+                        
+                        if [ "%teamcity.build.branch%" = "main" ] || [ "%teamcity.build.branch%" = "master" ]; then
+                            # Main branch: use next version + pre-release info
+                            SEMANTIC_VERSION="${'$'}NEW_VERSION-alpha.${'$'}COMMITS_SINCE_TAG+${'$'}COMMIT_HASH"
+                        else
+                            # Feature branch: include branch name
+                            BRANCH_NAME=$(echo "%teamcity.build.branch%" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
+                            SEMANTIC_VERSION="${'$'}NEW_VERSION-${'$'}BRANCH_NAME.${'$'}COMMITS_SINCE_TAG+${'$'}COMMIT_HASH"
+                        fi
+                    else
+                        # No commits since tag, use the tag version
+                        SEMANTIC_VERSION=${'$'}{LATEST_TAG#v}
+                    fi
+                    
+                    echo "🚧 Pre-release version: ${'$'}SEMANTIC_VERSION"
+                    
                 else
-                    # Fallback to build number if no package.json
-                    SEMANTIC_VERSION="%build.number%"
+                    # No tags in repository, start with 0.1.0
+                    COMMIT_HASH=$(git rev-parse --short HEAD)
+                    if [ "%teamcity.build.branch%" = "main" ] || [ "%teamcity.build.branch%" = "master" ]; then
+                        SEMANTIC_VERSION="0.1.0-alpha.%build.number%+${'$'}COMMIT_HASH"
+                    else
+                        BRANCH_NAME=$(echo "%teamcity.build.branch%" | sed 's/[^a-zA-Z0-9.-]/-/g' | tr '[:upper:]' '[:lower:]')
+                        SEMANTIC_VERSION="0.1.0-${'$'}BRANCH_NAME.%build.number%+${'$'}COMMIT_HASH"
+                    fi
+                    echo "🆕 No tags found, using initial version: ${'$'}SEMANTIC_VERSION"
                 fi
                 
-                echo "Semantic version: ${'$'}SEMANTIC_VERSION"
+                echo "=== Final Result ==="
+                echo "🏷️  Semantic Version: ${'$'}SEMANTIC_VERSION"
                 echo "##teamcity[setParameter name='env.SEMANTIC_VERSION' value='${'$'}SEMANTIC_VERSION']"
+                
+                # Also set individual version parts for reference
+                IFS='.' read -ra VERSION_PARTS <<< "${'$'}{SEMANTIC_VERSION%%-*}"
+                echo "##teamcity[setParameter name='env.VERSION_MAJOR' value='${'$'}{VERSION_PARTS[0]:-0}']"
+                echo "##teamcity[setParameter name='env.VERSION_MINOR' value='${'$'}{VERSION_PARTS[1]:-0}']"
+                echo "##teamcity[setParameter name='env.VERSION_PATCH' value='${'$'}{VERSION_PARTS[2]:-0}']"
             """.trimIndent()
         }
 
-        // Docker build step - Dockerfile.optimized handles dependency installation and building
+        // Docker build step - uses semantic version from Git tags
         dockerCommand {
             name = "build image"
             commandType = build {
                 source = file {
-                    path = "Dockerfile.optimized"  // Use the optimized multi-stage Dockerfile
+                    path = "Dockerfile.optimized"
                 }
-                // Use semantic version from Git tag, fallback to build number
+                // Use semantic version from Git tags
                 namesAndTags = """
                     protonmath/wwhatsapp-node:%env.SEMANTIC_VERSION%
                     protonmath/wwhatsapp-node:latest
@@ -81,6 +212,9 @@ object WwhatsappNode : BuildType({
     }
 
     requirements {
-        equals("env.AGENT_TYPE", "docker-build")  // Changed from nodejs-build to docker-build
+        // More flexible agent requirements - any agent with Docker support
+        exists("docker.server.version")  // Requires Docker daemon
+        // Alternative: comment out the line below if you don't have agents with this specific type
+        // equals("env.AGENT_TYPE", "docker-build")
     }
 })
