@@ -43,6 +43,7 @@ object Deploy : BuildType({
                 echo "=== Deploy Configuration ==="
                 echo "Application: ${'$'}APP_NAME"
                 echo "Cluster: ${'$'}CLUSTER_NAME"
+                echo "Version: ${'$'}VERSION_TO_DEPLOY"
                 
                 # Validate file exists and is a ConfigMap
                 if [ ! -f "${'$'}IMAGE_VERSIONS_FILE" ]; then
@@ -68,65 +69,80 @@ object Deploy : BuildType({
                 echo "Current file content around the key:"
                 grep -n "${'$'}TAG_KEY" "${'$'}IMAGE_VERSIONS_FILE" || echo "Key not found"
                 
-                # Update version in ConfigMap data section
+                # Create backup for rollback if needed
+                cp "${'$'}IMAGE_VERSIONS_FILE" "${'$'}IMAGE_VERSIONS_FILE.original"
+                
+                # Update version in ConfigMap data section with more robust approach
                 if grep -q "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE"; then
                     echo "Updating existing key in ConfigMap..."
-                    # Update the key in the data section, preserving indentation (typically 2 spaces)
-                    sed -i.bak "s/^\\([[:space:]]*\\)${'$'}TAG_KEY:[[:space:]]*.*$/\\1${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\"/" "${'$'}IMAGE_VERSIONS_FILE"
-                    rm -f "${'$'}IMAGE_VERSIONS_FILE.bak"
-                    echo "Key updated successfully"
+                    
+                    # Use perl for more robust regex replacement that handles quotes properly
+                    perl -i -pe "s/^(\\s*)\\Q${'$'}TAG_KEY\\E:\\s*.*$/"'$$1'"${'$'}TAG_KEY: \\\"${'$'}VERSION_TO_DEPLOY\\\"/g" "${'$'}IMAGE_VERSIONS_FILE"
+                    
+                    # Verify the update worked
+                    if grep -q "^[[:space:]]*${'$'}TAG_KEY:[[:space:]]*\"${'$'}VERSION_TO_DEPLOY\"" "${'$'}IMAGE_VERSIONS_FILE"; then
+                        echo "✅ Key updated successfully"
+                    else
+                        echo "❌ Update verification failed, rolling back..."
+                        mv "${'$'}IMAGE_VERSIONS_FILE.original" "${'$'}IMAGE_VERSIONS_FILE"
+                        exit 1
+                    fi
                 else
                     echo "Adding new key to ConfigMap data section..."
-                    # Find the data section and add the new key with proper indentation
-                    # Insert before the closing sections (before # ======= lines or metadata)
-                    awk -v tag_key="${'$'}TAG_KEY" -v version="${'$'}VERSION_TO_DEPLOY" '
-                    /^[[:space:]]*# ===========================================/ && !inserted && in_data {
-                        print "  " tag_key ": \"" version "\""
-                        print ""
-                        inserted = 1
-                    }
-                    /^data:/ { in_data = 1 }
-                    /^metadata:/ { in_data = 0 }
-                    { print }
-                    END {
-                        if (!inserted && in_data) {
-                            print "  " tag_key ": \"" version "\""
-                        }
-                    }' "${'$'}IMAGE_VERSIONS_FILE" > "${'$'}IMAGE_VERSIONS_FILE.tmp"
-                    mv "${'$'}IMAGE_VERSIONS_FILE.tmp" "${'$'}IMAGE_VERSIONS_FILE"
-                    echo "Key added successfully"
+                    
+                    # Find insertion point in data section (before first comment block)
+                    LINE_NUM=$(grep -n "^[[:space:]]*# ===" "${'$'}IMAGE_VERSIONS_FILE" | head -1 | cut -d: -f1)
+                    if [ -z "${'$'}LINE_NUM" ]; then
+                        # If no comment sections, add before metadata or at end of data
+                        LINE_NUM=$(grep -n "^[[:space:]]*# ==" "${'$'}IMAGE_VERSIONS_FILE" | head -1 | cut -d: -f1)
+                        if [ -z "${'$'}LINE_NUM" ]; then
+                            LINE_NUM=$(wc -l < "${'$'}IMAGE_VERSIONS_FILE")
+                        fi
+                    fi
+                    
+                    # Insert new key with proper indentation before the found line
+                    sed -i.bak "${'$'}{${'$'}LINE_NUM}i\\
+  ${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\"\\
+" "${'$'}IMAGE_VERSIONS_FILE"
+                    rm -f "${'$'}IMAGE_VERSIONS_FILE.bak"
+                    echo "✅ Key added successfully"
                 fi
                 
-                # Verify the change
-                echo "After update:"
-                grep -n "${'$'}TAG_KEY" "${'$'}IMAGE_VERSIONS_FILE"
-                
-                # Check for and remove any duplicate entries in ConfigMap
-                DUPLICATE_COUNT=$(grep -c "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" || echo "0")
+                # Remove any duplicate entries (keep first occurrence)
+                DUPLICATE_COUNT=$(grep -c "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE")
                 if [ "${'$'}DUPLICATE_COUNT" -gt 1 ]; then
                     echo "⚠️  Found ${'$'}DUPLICATE_COUNT duplicate entries for ${'$'}TAG_KEY, cleaning up..."
-                    # Keep only the first occurrence and remove duplicates
+                    
+                    # Keep only the first occurrence
                     awk -v tag_key="${'$'}TAG_KEY" '
+                    BEGIN { found = 0 }
                     /^[[:space:]]*'"${'$'}TAG_KEY"':/ {
-                        if (!seen) {
+                        if (found == 0) {
                             print
-                            seen = 1
+                            found = 1
                         }
                         next
                     }
-                    { print }' "${'$'}IMAGE_VERSIONS_FILE" > "${'$'}IMAGE_VERSIONS_FILE.tmp"
+                    { print }
+                    ' "${'$'}IMAGE_VERSIONS_FILE" > "${'$'}IMAGE_VERSIONS_FILE.tmp"
                     mv "${'$'}IMAGE_VERSIONS_FILE.tmp" "${'$'}IMAGE_VERSIONS_FILE"
-                    echo "Duplicates removed. Final result:"
-                    grep -n "${'$'}TAG_KEY" "${'$'}IMAGE_VERSIONS_FILE"
+                    echo "✅ Duplicates removed"
                 fi
                 
-                echo "✅ Version updated successfully"
-                
-                # Final verification - show the actual value that was set
+                # Final verification and cleanup
                 echo "=== Final Verification ==="
-                FINAL_VALUE=$(grep "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" | head -1)
-                echo "Set: ${'$'}FINAL_VALUE"
-                echo "Expected format: ${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\""
+                FINAL_LINE=$(grep -n "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" | head -1)
+                echo "Result: ${'$'}FINAL_LINE"
+                
+                # Verify the change is correct
+                if grep -q "^[[:space:]]*${'$'}TAG_KEY:[[:space:]]*\"${'$'}VERSION_TO_DEPLOY\"" "${'$'}IMAGE_VERSIONS_FILE"; then
+                    echo "✅ Version updated successfully: ${'$'}TAG_KEY = \"${'$'}VERSION_TO_DEPLOY\""
+                    rm -f "${'$'}IMAGE_VERSIONS_FILE.original"
+                else
+                    echo "❌ Final verification failed, rolling back..."
+                    mv "${'$'}IMAGE_VERSIONS_FILE.original" "${'$'}IMAGE_VERSIONS_FILE"
+                    exit 1
+                fi
             """.trimIndent()
         }
 
@@ -136,34 +152,59 @@ object Deploy : BuildType({
                 #!/bin/bash
                 set -euo pipefail
                 
+                # Extract parameters
                 APP_NAME="%env.APP_NAME%"
                 CLUSTER_NAME="%env.CLUSTER_NAME%"
+                VERSION_TO_DEPLOY="%env.VERSION_TO_DEPLOY%"
+                GITHUB_TOKEN="%env.GITHUB_TOKEN%"
                 IMAGE_VERSIONS_FILE="clusters/common/image-versions.yaml"
+                
+                echo "=== Git Operations ==="
+                echo "Configuring git..."
                 
                 # Configure git
                 git config user.name "TeamCity"
                 git config user.email "teamcity@dev4team.ai"
                 
                 # Check for changes
+                echo "Checking for changes in ${'$'}IMAGE_VERSIONS_FILE..."
                 if git diff --quiet "${'$'}IMAGE_VERSIONS_FILE"; then
-                    echo "No changes to commit"
+                    echo "ℹ️  No changes to commit - file unchanged"
                     exit 0
                 fi
                 
                 # Show what will be committed
-                echo "Changes to commit:"
+                echo "📋 Changes to commit:"
                 git diff "${'$'}IMAGE_VERSIONS_FILE"
                 
-                # Commit and push
+                # Stage and commit changes
+                echo "📝 Staging changes..."
                 git add "${'$'}IMAGE_VERSIONS_FILE"
-                git commit -m "Deploy ${'$'}APP_NAME to ${'$'}CLUSTER_NAME: %env.VERSION_TO_DEPLOY%"
                 
-                # Push using GitHub token authentication
-                GITHUB_TOKEN="%env.GITHUB_TOKEN%"
-                git remote set-url origin "https://${'$'}GITHUB_TOKEN@github.com/dev4team-ai/gptbot-helm.git"
-                git push origin main
+                COMMIT_MESSAGE="Deploy ${'$'}APP_NAME to ${'$'}CLUSTER_NAME: ${'$'}VERSION_TO_DEPLOY"
+                echo "💾 Committing with message: ${'$'}COMMIT_MESSAGE"
+                git commit -m "${'$'}COMMIT_MESSAGE"
                 
-                echo "✅ Changes pushed successfully"
+                # Set up authenticated remote URL
+                echo "🔐 Setting up GitHub authentication..."
+                AUTHENTICATED_URL="https://${'$'}GITHUB_TOKEN@github.com/dev4team-ai/gptbot-helm.git"
+                git remote set-url origin "${'$'}AUTHENTICATED_URL"
+                
+                # Push changes
+                echo "🚀 Pushing changes to remote..."
+                if git push origin main; then
+                    echo "✅ Changes pushed successfully!"
+                    
+                    # Get the commit hash for reference
+                    COMMIT_HASH=$(git rev-parse HEAD)
+                    echo "📍 Commit hash: ${'$'}COMMIT_HASH"
+                    echo "🔗 View commit: https://github.com/dev4team-ai/gptbot-helm/commit/${'$'}COMMIT_HASH"
+                else
+                    echo "❌ Failed to push changes"
+                    exit 1
+                fi
+                
+                echo "🎉 Deploy operation completed successfully!"
             """.trimIndent()
         }
     }
