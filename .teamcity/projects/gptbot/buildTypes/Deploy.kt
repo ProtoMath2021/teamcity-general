@@ -19,9 +19,7 @@ object Deploy : BuildType({
                display = ParameterDisplay.PROMPT,
                options = listOf("developing", "staging", "production"))
         text("env.VERSION_TO_DEPLOY", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
-        password("env.GITHUB_TOKEN", "", 
-                label = "GitHub Token", 
-                description = "GitHub Personal Access Token for repository access")
+        password("env.GITHUB_TOKEN", "zxxaad55a75a688127f728578b85ed8fba2bb136a4b71d21129be199a31c20381df6dfd994ad67534b5775d03cbe80d301b", label = "GitHub Token", description = "GitHub Personal Access Token for repository access", display = ParameterDisplay.HIDDEN, readOnly = true)
     }
 
     vcs {
