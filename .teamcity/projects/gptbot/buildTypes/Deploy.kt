@@ -19,6 +19,9 @@ object Deploy : BuildType({
                display = ParameterDisplay.PROMPT,
                options = listOf("developing", "staging", "production"))
         text("env.VERSION_TO_DEPLOY", "", display = ParameterDisplay.PROMPT, allowEmpty = true)
+        password("env.GITHUB_TOKEN", "", 
+                label = "GitHub Token", 
+                description = "GitHub Personal Access Token for repository access")
     }
 
     vcs {
@@ -95,8 +98,10 @@ object Deploy : BuildType({
                 git add "${'$'}IMAGE_VERSIONS_FILE"
                 git commit -m "Deploy ${'$'}APP_NAME to ${'$'}CLUSTER_NAME: %env.VERSION_TO_DEPLOY%"
                 
-                # Push using token authentication (similar to personal access token approach)
-                git push
+                # Push using GitHub token authentication
+                GITHUB_TOKEN="%env.GITHUB_TOKEN%"
+                git remote set-url origin "https://${'$'}GITHUB_TOKEN@github.com/dev4team-ai/gptbot-helm.git"
+                git push origin main
                 
                 echo "✅ Changes pushed successfully"
             """.trimIndent()
