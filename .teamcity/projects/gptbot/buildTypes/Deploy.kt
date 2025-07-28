@@ -2,6 +2,7 @@ package projects.gptbot.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
+import jetbrains.buildServer.configs.kotlin.buildSteps.kotlinScript
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.ui.*
 import projects.gptbot.vcsRoots.GptbotHelmGit
@@ -28,162 +29,149 @@ object Deploy : BuildType({
     }
 
     steps {
-        script {
+        kotlinScript {
             name = "Update Image Version"
-            scriptContent = """
-                #!/bin/bash
-                set -euo pipefail
+            content = """
+                import java.io.File
+                import kotlin.system.exitProcess
                 
-                # Extract parameters
-                APP_NAME="%env.APP_NAME%"
-                CLUSTER_NAME="%env.CLUSTER_NAME%"
-                VERSION_TO_DEPLOY="%env.VERSION_TO_DEPLOY%"
-                IMAGE_VERSIONS_FILE="clusters/common/image-versions.yaml"
+                // Configuration
+                val appName = "%env.APP_NAME%"
+                val clusterName = "%env.CLUSTER_NAME%"
+                val versionToDeploy = "%env.VERSION_TO_DEPLOY%"
+                val imageVersionsFile = File("clusters/common/image-versions.yaml")
+                val tagKey = "${'$'}appName-${'$'}clusterName-tag"
                 
-                echo "=== Deploy Configuration ==="
-                echo "Application: ${'$'}APP_NAME"
-                echo "Cluster: ${'$'}CLUSTER_NAME"
-                echo "Version: ${'$'}VERSION_TO_DEPLOY"
+                println("=== Updating ${'$'}tagKey to ${'$'}versionToDeploy ===")
                 
-                # Validate file exists and is a ConfigMap
-                if [ ! -f "${'$'}IMAGE_VERSIONS_FILE" ]; then
-                    echo "❌ Error: ${'$'}IMAGE_VERSIONS_FILE not found"
-                    exit 1
-                fi
+                // Validate input parameters
+                if (appName.isEmpty()) {
+                    println("❌ APP_NAME parameter is required")
+                    exitProcess(1)
+                }
+                if (clusterName.isEmpty()) {
+                    println("❌ CLUSTER_NAME parameter is required")
+                    exitProcess(1)
+                }
+                if (versionToDeploy.isEmpty()) {
+                    println("❌ VERSION_TO_DEPLOY parameter is required")
+                    exitProcess(1)
+                }
                 
-                # Verify it's a ConfigMap structure
-                if ! grep -q "kind: ConfigMap" "${'$'}IMAGE_VERSIONS_FILE"; then
-                    echo "⚠️  Warning: File doesn't appear to be a ConfigMap"
-                fi
+                // Validate file exists
+                if (!imageVersionsFile.exists()) {
+                    println("❌ File not found: ${'$'}{imageVersionsFile.absolutePath}")
+                    exitProcess(1)
+                }
                 
-                if ! grep -q "^data:" "${'$'}IMAGE_VERSIONS_FILE"; then
-                    echo "❌ Error: No 'data:' section found in ConfigMap"
-                    exit 1
-                fi
-                
-                # Generate tag key
-                TAG_KEY="${'$'}APP_NAME-${'$'}CLUSTER_NAME-tag"
-                echo "Updating key: ${'$'}TAG_KEY"
-                
-                # Check current content
-                echo "Current file content around the key:"
-                grep -n "${'$'}TAG_KEY" "${'$'}IMAGE_VERSIONS_FILE" || echo "Key not found"
-                
-                # Create backup for rollback if needed
-                cp "${'$'}IMAGE_VERSIONS_FILE" "${'$'}IMAGE_VERSIONS_FILE.original"
-                
-                # Update version in ConfigMap data section with indentation preservation
-                if grep -q "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE"; then
-                    echo "Updating existing key in ConfigMap..."
+                try {
+                    // Read the file content
+                    val lines = imageVersionsFile.readLines().toMutableList()
+                    val backupFile = File("${'$'}{imageVersionsFile.absolutePath}.bak")
                     
-                    # Get the current line to preserve exact indentation
-                    CURRENT_LINE=$(grep "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" | head -1)
-                    CURRENT_INDENTATION=$(echo "${'$'}CURRENT_LINE" | sed 's/[^[:space:]].*//')
-                    
-                    echo "Current line: ${'$'}CURRENT_LINE"
-                    echo "Preserving indentation: '${'$'}CURRENT_INDENTATION'"
-                    
-                    # Create the replacement line with exact same indentation
-                    NEW_LINE="${'$'}CURRENT_INDENTATION${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\""
-                    
-                    # Use sed to replace the line while preserving indentation
-                    sed -i.bak "/^[[:space:]]*${'$'}TAG_KEY:/c\\
-${'$'}NEW_LINE" "${'$'}IMAGE_VERSIONS_FILE"
-                    rm -f "${'$'}IMAGE_VERSIONS_FILE.bak"
-                    
-                    # Verify the update worked
-                    if grep -q "^[[:space:]]*${'$'}TAG_KEY:[[:space:]]*\"${'$'}VERSION_TO_DEPLOY\"" "${'$'}IMAGE_VERSIONS_FILE"; then
-                        echo "✅ Key updated successfully with preserved indentation"
-                    else
-                        echo "❌ Update verification failed, rolling back..."
-                        mv "${'$'}IMAGE_VERSIONS_FILE.original" "${'$'}IMAGE_VERSIONS_FILE"
-                        exit 1
-                    fi
-                else
-                    echo "Adding new key to ConfigMap data section..."
-                    
-                    # Find the appropriate section for this app
-                    # Look for existing keys with the same app name to maintain grouping
-                    APP_SECTION_LINE=$(grep -n "^[[:space:]]*${'$'}APP_NAME-.*-tag:" "${'$'}IMAGE_VERSIONS_FILE" | tail -1 | cut -d: -f1)
-                    
-                    if [ -n "${'$'}APP_SECTION_LINE" ]; then
-                        # Insert after the last line of this app's section
-                        echo "Found existing ${'$'}APP_NAME section at line ${'$'}APP_SECTION_LINE, inserting after..."
-                        INSERT_LINE=$((APP_SECTION_LINE + 1))
-                    else
-                        # Find a good insertion point (before comment sections)
-                        INSERT_LINE=$(grep -n "^[[:space:]]*# ===" "${'$'}IMAGE_VERSIONS_FILE" | head -1 | cut -d: -f1)
-                        if [ -z "${'$'}INSERT_LINE" ]; then
-                            # Fallback: add near end of data section
-                            INSERT_LINE=$(grep -n "^[[:space:]]*last-updated:" "${'$'}IMAGE_VERSIONS_FILE" | cut -d: -f1)
-                            if [ -z "${'$'}INSERT_LINE" ]; then
-                                INSERT_LINE=$(wc -l < "${'$'}IMAGE_VERSIONS_FILE")
-                            fi
-                        fi
-                    fi
-                    
-                    # Get the indentation from surrounding lines in the data section
-                    INDENTATION="  "  # Default to 2 spaces for ConfigMap
-                    
-                    # Try to get indentation from nearby data entries
-                    NEARBY_INDENTATION=$(grep "^[[:space:]]*[a-zA-Z].*-tag:" "${'$'}IMAGE_VERSIONS_FILE" | head -1 | sed 's/[^[:space:]].*//')
-                    if [ -n "${'$'}NEARBY_INDENTATION" ]; then
-                        INDENTATION="${'$'}NEARBY_INDENTATION"
-                        echo "Using indentation from existing entries: '${'$'}INDENTATION'"
-                    else
-                        echo "Using default ConfigMap indentation: '${'$'}INDENTATION'"
-                    fi
-                    
-                    # Insert with proper indentation using a more reliable method
-                    {
-                        head -n $((INSERT_LINE - 1)) "${'$'}IMAGE_VERSIONS_FILE"
-                        echo "${'$'}INDENTATION${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\""
-                        tail -n +${'$'}INSERT_LINE "${'$'}IMAGE_VERSIONS_FILE"
-                    } > "${'$'}IMAGE_VERSIONS_FILE.tmp"
-                    mv "${'$'}IMAGE_VERSIONS_FILE.tmp" "${'$'}IMAGE_VERSIONS_FILE"
-                    echo "✅ Key added successfully"
-                fi
-                
-                # Remove any duplicate entries (keep first occurrence)
-                DUPLICATE_COUNT=$(grep -c "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE")
-                if [ "${'$'}DUPLICATE_COUNT" -gt 1 ]; then
-                    echo "⚠️  Found ${'$'}DUPLICATE_COUNT duplicate entries for ${'$'}TAG_KEY, cleaning up..."
-                    
-                    # Keep only the first occurrence
-                    awk -v tag_key="${'$'}TAG_KEY" '
-                    BEGIN { found = 0 }
-                    /^[[:space:]]*'"${'$'}TAG_KEY"':/ {
-                        if (found == 0) {
-                            print
-                            found = 1
-                        }
-                        next
+                    // Escape regex special characters in tagKey for safety
+                    val escapedTagKey = Regex.escape(tagKey)
+                    val tagPattern = Regex("^\\s*${'$'}escapedTagKey:\\s*")
+                    val matchingLines = lines.mapIndexedNotNull { index, line ->
+                        if (tagPattern.containsMatchIn(line)) index else null
                     }
-                    { print }
-                    ' "${'$'}IMAGE_VERSIONS_FILE" > "${'$'}IMAGE_VERSIONS_FILE.tmp"
-                    mv "${'$'}IMAGE_VERSIONS_FILE.tmp" "${'$'}IMAGE_VERSIONS_FILE"
-                    echo "✅ Duplicates removed"
-                fi
-                
-                # Final verification and cleanup
-                echo "=== Final Verification ==="
-                
-                # Show context around our key to verify indentation
-                echo "Lines around our key:"
-                grep -B2 -A2 "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE"
-                
-                FINAL_LINE=$(grep -n "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" | head -1)
-                echo "Final result line: ${'$'}FINAL_LINE"
-                
-                # Verify the change is correct
-                if grep -q "^[[:space:]]*${'$'}TAG_KEY:[[:space:]]*\"${'$'}VERSION_TO_DEPLOY\"" "${'$'}IMAGE_VERSIONS_FILE"; then
-                    echo "✅ Version updated successfully: ${'$'}TAG_KEY = \"${'$'}VERSION_TO_DEPLOY\""
-                    rm -f "${'$'}IMAGE_VERSIONS_FILE.original"
-                else
-                    echo "❌ Final verification failed, rolling back..."
-                    mv "${'$'}IMAGE_VERSIONS_FILE.original" "${'$'}IMAGE_VERSIONS_FILE"
-                    exit 1
-                fi
+                    
+                    // Ensure we have exactly one match
+                    when (matchingLines.size) {
+                        0 -> {
+                            println("❌ Key '${'$'}tagKey' not found in ${'$'}{imageVersionsFile.absolutePath}")
+                            println("Available keys matching pattern '${'$'}appName-*-tag:'")
+                            val availableKeys = lines.filter { 
+                                it.contains("${'$'}appName-") && it.contains("-tag:") 
+                            }
+                            if (availableKeys.isEmpty()) {
+                                println("  - No matching keys found")
+                            } else {
+                                availableKeys.forEach { println("  - ${'$'}{it.trim()}") }
+                            }
+                            exitProcess(1)
+                        }
+                        1 -> {
+                            // Perfect - exactly one match found
+                            val lineIndex = matchingLines[0]
+                            val existingLine = lines[lineIndex]
+                            val indentation = existingLine.takeWhile { it.isWhitespace() }
+                            
+                            println("Found existing key at line ${'$'}{lineIndex + 1}: ${'$'}{existingLine.trim()}")
+                            
+                            // Create backup before making changes
+                            try {
+                                imageVersionsFile.copyTo(backupFile, overwrite = true)
+                            } catch (e: Exception) {
+                                println("❌ Failed to create backup: ${'$'}{e.message}")
+                                exitProcess(1)
+                            }
+                            
+                            // Update the line
+                            lines[lineIndex] = "${'$'}indentation${'$'}tagKey: \"${'$'}versionToDeploy\""
+                            
+                            // Write updated content
+                            try {
+                                imageVersionsFile.writeText(lines.joinToString("\n") + "\n")
+                            } catch (e: Exception) {
+                                println("❌ Failed to write file: ${'$'}{e.message}")
+                                // Restore backup
+                                if (backupFile.exists()) {
+                                    backupFile.copyTo(imageVersionsFile, overwrite = true)
+                                    backupFile.delete()
+                                }
+                                exitProcess(1)
+                            }
+                            
+                            // Verify the update with exact match
+                            val updatedContent = imageVersionsFile.readText()
+                            val expectedLine = "${'$'}tagKey: \"${'$'}versionToDeploy\""
+                            if (!updatedContent.contains(expectedLine)) {
+                                println("❌ Update verification failed - could not find: ${'$'}expectedLine")
+                                // Restore backup
+                                if (backupFile.exists()) {
+                                    backupFile.copyTo(imageVersionsFile, overwrite = true)
+                                    backupFile.delete()
+                                }
+                                exitProcess(1)
+                            }
+                            
+                            // Clean up backup
+                            if (backupFile.exists()) {
+                                backupFile.delete()
+                            }
+                            
+                            println("✅ Successfully updated: ${'$'}tagKey = \"${'$'}versionToDeploy\"")
+                            println("Updated line: ${'$'}{lines[lineIndex].trim()}")
+                        }
+                        else -> {
+                            // Multiple matches - this should not happen with proper YAML
+                            println("❌ Found ${'$'}{matchingLines.size} duplicate entries for '${'$'}tagKey':")
+                            matchingLines.forEach { index ->
+                                println("  Line ${'$'}{index + 1}: ${'$'}{lines[index].trim()}")
+                            }
+                            println("Please manually fix the duplicate entries in the YAML file.")
+                            exitProcess(1)
+                        }
+                    }
+                    
+                } catch (e: Exception) {
+                    println("❌ Update failed: ${'$'}{e.message}")
+                    println("Stack trace: ${'$'}{e.stackTraceToString()}")
+                    // Restore backup if it exists
+                    val backupFile = File("${'$'}{imageVersionsFile.absolutePath}.bak")
+                    if (backupFile.exists()) {
+                        try {
+                            println("🔄 Restoring backup...")
+                            backupFile.copyTo(imageVersionsFile, overwrite = true)
+                            backupFile.delete()
+                            println("✅ Backup restored successfully")
+                        } catch (restoreException: Exception) {
+                            println("❌ Failed to restore backup: ${'$'}{restoreException.message}")
+                        }
+                    }
+                    exitProcess(1)
+                }
             """.trimIndent()
         }
 
