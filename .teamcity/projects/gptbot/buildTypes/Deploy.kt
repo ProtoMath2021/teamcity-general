@@ -72,16 +72,28 @@ object Deploy : BuildType({
                 # Create backup for rollback if needed
                 cp "${'$'}IMAGE_VERSIONS_FILE" "${'$'}IMAGE_VERSIONS_FILE.original"
                 
-                # Update version in ConfigMap data section with more robust approach
+                # Update version in ConfigMap data section with indentation preservation
                 if grep -q "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE"; then
                     echo "Updating existing key in ConfigMap..."
                     
-                    # Use perl for more robust regex replacement that handles quotes properly
-                    perl -i -pe "s/^(\\s*)\\Q${'$'}TAG_KEY\\E:\\s*.*$/"'$$1'"${'$'}TAG_KEY: \\\"${'$'}VERSION_TO_DEPLOY\\\"/g" "${'$'}IMAGE_VERSIONS_FILE"
+                    # Get the current line to preserve exact indentation
+                    CURRENT_LINE=$(grep "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" | head -1)
+                    CURRENT_INDENTATION=$(echo "${'$'}CURRENT_LINE" | sed 's/[^[:space:]].*//')
+                    
+                    echo "Current line: ${'$'}CURRENT_LINE"
+                    echo "Preserving indentation: '${'$'}CURRENT_INDENTATION'"
+                    
+                    # Create the replacement line with exact same indentation
+                    NEW_LINE="${'$'}CURRENT_INDENTATION${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\""
+                    
+                    # Use sed to replace the line while preserving indentation
+                    sed -i.bak "/^[[:space:]]*${'$'}TAG_KEY:/c\\
+${'$'}NEW_LINE" "${'$'}IMAGE_VERSIONS_FILE"
+                    rm -f "${'$'}IMAGE_VERSIONS_FILE.bak"
                     
                     # Verify the update worked
                     if grep -q "^[[:space:]]*${'$'}TAG_KEY:[[:space:]]*\"${'$'}VERSION_TO_DEPLOY\"" "${'$'}IMAGE_VERSIONS_FILE"; then
-                        echo "✅ Key updated successfully"
+                        echo "✅ Key updated successfully with preserved indentation"
                     else
                         echo "❌ Update verification failed, rolling back..."
                         mv "${'$'}IMAGE_VERSIONS_FILE.original" "${'$'}IMAGE_VERSIONS_FILE"
@@ -90,21 +102,45 @@ object Deploy : BuildType({
                 else
                     echo "Adding new key to ConfigMap data section..."
                     
-                    # Find insertion point in data section (before first comment block)
-                    LINE_NUM=$(grep -n "^[[:space:]]*# ===" "${'$'}IMAGE_VERSIONS_FILE" | head -1 | cut -d: -f1)
-                    if [ -z "${'$'}LINE_NUM" ]; then
-                        # If no comment sections, add before metadata or at end of data
-                        LINE_NUM=$(grep -n "^[[:space:]]*# ==" "${'$'}IMAGE_VERSIONS_FILE" | head -1 | cut -d: -f1)
-                        if [ -z "${'$'}LINE_NUM" ]; then
-                            LINE_NUM=$(wc -l < "${'$'}IMAGE_VERSIONS_FILE")
+                    # Find the appropriate section for this app
+                    # Look for existing keys with the same app name to maintain grouping
+                    APP_SECTION_LINE=$(grep -n "^[[:space:]]*${'$'}APP_NAME-.*-tag:" "${'$'}IMAGE_VERSIONS_FILE" | tail -1 | cut -d: -f1)
+                    
+                    if [ -n "${'$'}APP_SECTION_LINE" ]; then
+                        # Insert after the last line of this app's section
+                        echo "Found existing ${'$'}APP_NAME section at line ${'$'}APP_SECTION_LINE, inserting after..."
+                        INSERT_LINE=$((APP_SECTION_LINE + 1))
+                    else
+                        # Find a good insertion point (before comment sections)
+                        INSERT_LINE=$(grep -n "^[[:space:]]*# ===" "${'$'}IMAGE_VERSIONS_FILE" | head -1 | cut -d: -f1)
+                        if [ -z "${'$'}INSERT_LINE" ]; then
+                            # Fallback: add near end of data section
+                            INSERT_LINE=$(grep -n "^[[:space:]]*last-updated:" "${'$'}IMAGE_VERSIONS_FILE" | cut -d: -f1)
+                            if [ -z "${'$'}INSERT_LINE" ]; then
+                                INSERT_LINE=$(wc -l < "${'$'}IMAGE_VERSIONS_FILE")
+                            fi
                         fi
                     fi
                     
-                    # Insert new key with proper indentation before the found line
-                    sed -i.bak "${'$'}{${'$'}LINE_NUM}i\\
-  ${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\"\\
-" "${'$'}IMAGE_VERSIONS_FILE"
-                    rm -f "${'$'}IMAGE_VERSIONS_FILE.bak"
+                    # Get the indentation from surrounding lines in the data section
+                    INDENTATION="  "  # Default to 2 spaces for ConfigMap
+                    
+                    # Try to get indentation from nearby data entries
+                    NEARBY_INDENTATION=$(grep "^[[:space:]]*[a-zA-Z].*-tag:" "${'$'}IMAGE_VERSIONS_FILE" | head -1 | sed 's/[^[:space:]].*//')
+                    if [ -n "${'$'}NEARBY_INDENTATION" ]; then
+                        INDENTATION="${'$'}NEARBY_INDENTATION"
+                        echo "Using indentation from existing entries: '${'$'}INDENTATION'"
+                    else
+                        echo "Using default ConfigMap indentation: '${'$'}INDENTATION'"
+                    fi
+                    
+                    # Insert with proper indentation using a more reliable method
+                    {
+                        head -n $((INSERT_LINE - 1)) "${'$'}IMAGE_VERSIONS_FILE"
+                        echo "${'$'}INDENTATION${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\""
+                        tail -n +${'$'}INSERT_LINE "${'$'}IMAGE_VERSIONS_FILE"
+                    } > "${'$'}IMAGE_VERSIONS_FILE.tmp"
+                    mv "${'$'}IMAGE_VERSIONS_FILE.tmp" "${'$'}IMAGE_VERSIONS_FILE"
                     echo "✅ Key added successfully"
                 fi
                 
@@ -131,8 +167,13 @@ object Deploy : BuildType({
                 
                 # Final verification and cleanup
                 echo "=== Final Verification ==="
+                
+                # Show context around our key to verify indentation
+                echo "Lines around our key:"
+                grep -B2 -A2 "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE"
+                
                 FINAL_LINE=$(grep -n "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" | head -1)
-                echo "Result: ${'$'}FINAL_LINE"
+                echo "Final result line: ${'$'}FINAL_LINE"
                 
                 # Verify the change is correct
                 if grep -q "^[[:space:]]*${'$'}TAG_KEY:[[:space:]]*\"${'$'}VERSION_TO_DEPLOY\"" "${'$'}IMAGE_VERSIONS_FILE"; then
