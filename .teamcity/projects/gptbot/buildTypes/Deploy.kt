@@ -4,7 +4,7 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.ui.*
-import projects.gptbot.vcsRoots.GptbotHelmGitSsh
+import projects.gptbot.vcsRoots.GptbotHelmGit
 
 object Deploy : BuildType({
     id("GptbotProject_Deploy")
@@ -22,7 +22,7 @@ object Deploy : BuildType({
     }
 
     vcs {
-        root(GptbotHelmGitSsh)
+        root(GptbotHelmGit)
         cleanCheckout = true
     }
 
@@ -76,13 +76,6 @@ object Deploy : BuildType({
                 APP_NAME="%env.APP_NAME%"
                 CLUSTER_NAME="%env.CLUSTER_NAME%"
                 IMAGE_VERSIONS_FILE="clusters/common/image-versions.yaml"
-                
-                # Configure SSH to accept GitHub's host key
-                mkdir -p ~/.ssh
-                ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
-                
-                # Alternative: Configure SSH to skip host key checking (less secure)
-                # export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
                 
                 # Configure git
                 git config user.name "TeamCity"
