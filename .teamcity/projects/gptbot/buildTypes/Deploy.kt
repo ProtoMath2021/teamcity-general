@@ -44,9 +44,19 @@ object Deploy : BuildType({
                 echo "Application: ${'$'}APP_NAME"
                 echo "Cluster: ${'$'}CLUSTER_NAME"
                 
-                # Validate file exists
+                # Validate file exists and is a ConfigMap
                 if [ ! -f "${'$'}IMAGE_VERSIONS_FILE" ]; then
                     echo "❌ Error: ${'$'}IMAGE_VERSIONS_FILE not found"
+                    exit 1
+                fi
+                
+                # Verify it's a ConfigMap structure
+                if ! grep -q "kind: ConfigMap" "${'$'}IMAGE_VERSIONS_FILE"; then
+                    echo "⚠️  Warning: File doesn't appear to be a ConfigMap"
+                fi
+                
+                if ! grep -q "^data:" "${'$'}IMAGE_VERSIONS_FILE"; then
+                    echo "❌ Error: No 'data:' section found in ConfigMap"
                     exit 1
                 fi
                 
@@ -54,17 +64,69 @@ object Deploy : BuildType({
                 TAG_KEY="${'$'}APP_NAME-${'$'}CLUSTER_NAME-tag"
                 echo "Updating key: ${'$'}TAG_KEY"
                 
-                # Update version
-                if grep -q "^${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE"; then
-                    echo "Updating existing key..."
-                    sed -i.bak "s/^${'$'}TAG_KEY:.*/${'$'}TAG_KEY: ${'$'}VERSION_TO_DEPLOY/" "${'$'}IMAGE_VERSIONS_FILE"
+                # Check current content
+                echo "Current file content around the key:"
+                grep -n "${'$'}TAG_KEY" "${'$'}IMAGE_VERSIONS_FILE" || echo "Key not found"
+                
+                # Update version in ConfigMap data section
+                if grep -q "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE"; then
+                    echo "Updating existing key in ConfigMap..."
+                    # Update the key in the data section, preserving indentation (typically 2 spaces)
+                    sed -i.bak "s/^\\([[:space:]]*\\)${'$'}TAG_KEY:[[:space:]]*.*$/\\1${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\"/" "${'$'}IMAGE_VERSIONS_FILE"
                     rm -f "${'$'}IMAGE_VERSIONS_FILE.bak"
+                    echo "Key updated successfully"
                 else
-                    echo "Adding new key..."
-                    echo "${'$'}TAG_KEY: ${'$'}VERSION_TO_DEPLOY" >> "${'$'}IMAGE_VERSIONS_FILE"
+                    echo "Adding new key to ConfigMap data section..."
+                    # Find the data section and add the new key with proper indentation
+                    # Insert before the closing sections (before # ======= lines or metadata)
+                    awk -v tag_key="${'$'}TAG_KEY" -v version="${'$'}VERSION_TO_DEPLOY" '
+                    /^[[:space:]]*# ===========================================/ && !inserted && in_data {
+                        print "  " tag_key ": \"" version "\""
+                        print ""
+                        inserted = 1
+                    }
+                    /^data:/ { in_data = 1 }
+                    /^metadata:/ { in_data = 0 }
+                    { print }
+                    END {
+                        if (!inserted && in_data) {
+                            print "  " tag_key ": \"" version "\""
+                        }
+                    }' "${'$'}IMAGE_VERSIONS_FILE" > "${'$'}IMAGE_VERSIONS_FILE.tmp"
+                    mv "${'$'}IMAGE_VERSIONS_FILE.tmp" "${'$'}IMAGE_VERSIONS_FILE"
+                    echo "Key added successfully"
+                fi
+                
+                # Verify the change
+                echo "After update:"
+                grep -n "${'$'}TAG_KEY" "${'$'}IMAGE_VERSIONS_FILE"
+                
+                # Check for and remove any duplicate entries in ConfigMap
+                DUPLICATE_COUNT=$(grep -c "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" || echo "0")
+                if [ "${'$'}DUPLICATE_COUNT" -gt 1 ]; then
+                    echo "⚠️  Found ${'$'}DUPLICATE_COUNT duplicate entries for ${'$'}TAG_KEY, cleaning up..."
+                    # Keep only the first occurrence and remove duplicates
+                    awk -v tag_key="${'$'}TAG_KEY" '
+                    /^[[:space:]]*'"${'$'}TAG_KEY"':/ {
+                        if (!seen) {
+                            print
+                            seen = 1
+                        }
+                        next
+                    }
+                    { print }' "${'$'}IMAGE_VERSIONS_FILE" > "${'$'}IMAGE_VERSIONS_FILE.tmp"
+                    mv "${'$'}IMAGE_VERSIONS_FILE.tmp" "${'$'}IMAGE_VERSIONS_FILE"
+                    echo "Duplicates removed. Final result:"
+                    grep -n "${'$'}TAG_KEY" "${'$'}IMAGE_VERSIONS_FILE"
                 fi
                 
                 echo "✅ Version updated successfully"
+                
+                # Final verification - show the actual value that was set
+                echo "=== Final Verification ==="
+                FINAL_VALUE=$(grep "^[[:space:]]*${'$'}TAG_KEY:" "${'$'}IMAGE_VERSIONS_FILE" | head -1)
+                echo "Set: ${'$'}FINAL_VALUE"
+                echo "Expected format: ${'$'}TAG_KEY: \"${'$'}VERSION_TO_DEPLOY\""
             """.trimIndent()
         }
 
