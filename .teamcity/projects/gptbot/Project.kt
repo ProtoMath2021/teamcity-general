@@ -31,8 +31,6 @@ object GptbotProject : Project({
 
     buildType(Backend)
     buildType(Deploy)
-    buildType(DeployBackend)
-    buildType(DeployFrontend)
     buildType(Frontend)
     buildType(WwhatsappNode)
 })
