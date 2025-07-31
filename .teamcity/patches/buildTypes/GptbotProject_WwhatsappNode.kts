@@ -1,6 +1,7 @@
 package patches.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.*
+import jetbrains.buildServer.configs.kotlin.buildSteps.DockerCommandStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.buildSteps.kotlinScript
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
@@ -71,6 +72,14 @@ changeBuildType(RelativeId("GptbotProject_WwhatsappNode")) {
         }
     }
     steps {
+        update<DockerCommandStep>(3) {
+            enabled = false
+            clearConditions()
+
+            conditions {
+                matches("teamcity.build.branch", "refs/heads/(main|master)")
+            }
+        }
         insert(4) {
             kotlinScript {
                 name = "set last tag"
