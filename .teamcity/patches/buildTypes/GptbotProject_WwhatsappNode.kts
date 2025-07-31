@@ -4,7 +4,6 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.DockerCommandStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.ScriptBuildStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
-import jetbrains.buildServer.configs.kotlin.buildSteps.kotlinScript
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.ui.*
 
@@ -94,11 +93,10 @@ changeBuildType(RelativeId("GptbotProject_WwhatsappNode")) {
             }
         }
         insert(4) {
-            kotlinScript {
+            script {
                 name = "set last tag"
                 id = "set_last_tag"
-                executionMode = BuildStep.ExecutionMode.ALWAYS
-                content = """env["WWHATSAP_NODE_LAST_TAG"] = "my_value""""
+                scriptContent = """env[WWHATSAP_NODE_LAST_TAG] = "test""""
             }
         }
     }
