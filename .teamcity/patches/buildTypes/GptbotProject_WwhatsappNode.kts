@@ -2,6 +2,7 @@ package patches.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.DockerCommandStep
+import jetbrains.buildServer.configs.kotlin.buildSteps.ScriptBuildStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.buildSteps.kotlinScript
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
@@ -72,6 +73,10 @@ changeBuildType(RelativeId("GptbotProject_WwhatsappNode")) {
         }
     }
     steps {
+        update<ScriptBuildStep>(0) {
+            enabled = false
+            clearConditions()
+        }
         update<DockerCommandStep>(1) {
             enabled = false
             clearConditions()
