@@ -97,6 +97,7 @@ changeBuildType(RelativeId("GptbotProject_WwhatsappNode")) {
             kotlinScript {
                 name = "set last tag"
                 id = "set_last_tag"
+                executionMode = BuildStep.ExecutionMode.ALWAYS
                 content = """env["WWHATSAP_NODE_LAST_TAG"] = "my_value""""
             }
         }
