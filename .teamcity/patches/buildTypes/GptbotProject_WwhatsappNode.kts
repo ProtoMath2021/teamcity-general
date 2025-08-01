@@ -71,10 +71,6 @@ changeBuildType(RelativeId("GptbotProject_WwhatsappNode")) {
         }
     }
     steps {
-        update<DockerCommandStep>(1) {
-            enabled = false
-            clearConditions()
-        }
         update<DockerCommandStep>(2) {
             enabled = false
             clearConditions()
