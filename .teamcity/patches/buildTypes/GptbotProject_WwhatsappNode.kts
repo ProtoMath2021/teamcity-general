@@ -92,12 +92,5 @@ changeBuildType(RelativeId("GptbotProject_WwhatsappNode")) {
                 matches("teamcity.build.branch", "refs/heads/(main|master)")
             }
         }
-        insert(4) {
-            script {
-                name = "set last tag"
-                id = "set_last_tag"
-                scriptContent = """env[WWHATSAP_NODE_LAST_TAG] = "test""""
-            }
-        }
     }
 }
