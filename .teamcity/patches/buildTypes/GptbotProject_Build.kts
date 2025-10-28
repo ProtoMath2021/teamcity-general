@@ -3,6 +3,7 @@ package patches.buildTypes
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.BuildType
 import jetbrains.buildServer.configs.kotlin.buildFeatures.perfmon
+import jetbrains.buildServer.configs.kotlin.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.ui.*
@@ -25,6 +26,14 @@ create(RelativeId("GptbotProject"), BuildType({
             name = "build"
             id = "build"
             tasks = "bootBuildImage"
+        }
+        dockerCommand {
+            name = "tag"
+            id = "tag"
+            commandType = other {
+                subCommand = "tag"
+                commandArgs = "docker.io/library/whatsapp-controller:0.1.0 protonmath/whatsapp-controller:%build.number%"
+            }
         }
     }
 
