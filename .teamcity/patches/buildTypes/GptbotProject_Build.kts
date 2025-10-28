@@ -13,7 +13,7 @@ in the project with id = 'GptbotProject', and delete the patch script.
 */
 create(RelativeId("GptbotProject"), BuildType({
     id("GptbotProject_Build")
-    name = "Build"
+    name = "wwhatsapp-controller"
 
     vcs {
         root(RelativeId("GptbotProject_HttpsGithubComDev4teamAiWhatsappControllerRefsHeadsMaster"))
