@@ -4,9 +4,14 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.projectFeatures.githubAppConnection
 import projects.gptbot.vcsRoots.*
 import projects.gptbot.buildTypes.*
+import projects.gptbot.whatsappController.WhatsappControllerProject
 
 object GptbotProject : Project({
     name = "Gptbot"
+
+    params {
+        param("env.WWHATSAP_NODE_LAST_TAG", "")
+    }
 
     features {
         githubAppConnection {
@@ -28,9 +33,13 @@ object GptbotProject : Project({
     vcsRoot(GptAgentUiGit)
     vcsRoot(GptbotHelmGit)
     vcsRoot(GptbotHelmGitSsh)
+    vcsRoot(WhatsappControllerGit)
 
     buildType(Backend)
     buildType(Deploy)
     buildType(Frontend)
     buildType(WwhatsappNode)
+    buildType(WhatsappControllerBuild)
+
+    subProject(WhatsappControllerProject)
 })
