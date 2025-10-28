@@ -35,6 +35,13 @@ create(RelativeId("GptbotProject"), BuildType({
                 commandArgs = "docker.io/library/whatsapp-controller:0.1.0 protonmath/whatsapp-controller:%build.number%"
             }
         }
+        dockerCommand {
+            name = "publish"
+            id = "publish"
+            commandType = push {
+                namesAndTags = "protonmath/whatsapp-controller:%build.number%"
+            }
+        }
     }
 
     triggers {
