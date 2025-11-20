@@ -26,6 +26,7 @@ changeVcsRoot(RelativeId("Gptbot_GptAgentUiGit")) {
     }
 
     (this as GitVcsRoot).apply {
+        branch = "%BranchName%"
         branchSpec = "*"
     }
 
