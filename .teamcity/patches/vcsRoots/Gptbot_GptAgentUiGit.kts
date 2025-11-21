@@ -26,7 +26,7 @@ changeVcsRoot(RelativeId("Gptbot_GptAgentUiGit")) {
     }
 
     (this as GitVcsRoot).apply {
-        branch = "%teamcity.build.vcs.branch.Gptbot_GptAgentUiGit%"
+        branch = "refs/head/main"
         branchSpec = "*"
     }
 
