@@ -4,7 +4,6 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.projectFeatures.githubAppConnection
 import projects.gptbot.vcsRoots.*
 import projects.gptbot.buildTypes.*
-import projects.gptbot.whatsappController.WhatsappControllerProject
 
 object GptbotProject : Project({
     name = "Gptbot"
@@ -40,6 +39,4 @@ object GptbotProject : Project({
     buildType(Frontend)
     buildType(WwhatsappNode)
     buildType(WhatsappControllerBuild)
-
-    subProject(WhatsappControllerProject)
 })

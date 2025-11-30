@@ -1,0 +1,37 @@
+# Pre-built TeamCity DSL Builder Image
+# This image contains all Maven dependencies pre-cached
+# Build once, push to registry, use for all DSL builds
+#
+# Build:   docker build -f Dockerfile.prebuilt -t protonmath/teamcity-dsl-builder:latest .
+# Push:    docker push protonmath/teamcity-dsl-builder:latest
+#
+# Usage:   docker run -v $(pwd):/teamcity-dsl protonmath/teamcity-dsl-builder:latest
+
+FROM maven:3.9-eclipse-temurin-17
+
+LABEL maintainer="TeamCity DSL Builder"
+LABEL description="Pre-built image for TeamCity Kotlin DSL compilation with cached dependencies"
+
+WORKDIR /teamcity-dsl
+
+# Copy pom.xml to download dependencies
+COPY pom.xml .
+
+# Create dummy source structure to satisfy Maven
+RUN mkdir -p projects && \
+    echo 'version = "2025.03"' > settings.kts && \
+    echo 'project {}' >> settings.kts
+
+# Download all dependencies and cache them in the image
+RUN mvn dependency:go-offline -B && \
+    mvn dependency:resolve-plugins -B && \
+    # Warm up Kotlin compiler by running compile once
+    mvn compile -B || true && \
+    # Clean up dummy sources
+    rm -rf projects settings.kts target
+
+# Set entrypoint for easy usage
+ENTRYPOINT ["mvn"]
+
+# Default: compile and generate configs
+CMD ["compile", "teamcity-configs:generate", "-B"]
