@@ -20,14 +20,23 @@ object KeycloakifyStarter : BuildType({
                 source = file {
                     path = "Dockerfile"
                 }
-                namesAndTags = "protonmath/keycloakify-starter:%build.counter%"
-                platform = "linux/amd64"
+                namesAndTags = """
+                    protonmath/keycloakify-starter:%build.counter%
+                    protonmath/keycloakify-starter:latest
+                """.trimIndent()
+                commandArgs = "--platform linux/amd64"
             }
         }
         dockerCommand {
             name = "push"
             commandType = push {
                 namesAndTags = "protonmath/keycloakify-starter:%build.counter%"
+            }
+        }
+        dockerCommand {
+            name = "push latest"
+            commandType = push {
+                namesAndTags = "protonmath/keycloakify-starter:latest"
             }
         }
     }
