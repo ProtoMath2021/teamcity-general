@@ -33,10 +33,12 @@ object GptbotProject : Project({
     vcsRoot(GptbotHelmGit)
     vcsRoot(GptbotHelmGitSsh)
     vcsRoot(WhatsappControllerGit)
+    vcsRoot(KeycloakifyStarterGit)
 
     buildType(Backend)
     buildType(Deploy)
     buildType(Frontend)
     buildType(WwhatsappNode)
     buildType(WhatsappControllerBuild)
+    buildType(KeycloakifyStarter)
 })
