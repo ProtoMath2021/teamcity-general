@@ -34,6 +34,8 @@ object GptbotProject : Project({
     vcsRoot(GptbotHelmGitSsh)
     vcsRoot(WhatsappControllerGit)
     vcsRoot(KeycloakifyStarterGit)
+    vcsRoot(ChannelServiceGit)
+
 
     buildType(Backend)
     buildType(Deploy)
@@ -41,4 +43,5 @@ object GptbotProject : Project({
     buildType(WwhatsappNode)
     buildType(WhatsappControllerBuild)
     buildType(KeycloakifyStarter)
+    buildType(ChannelServiceBuild)
 })
