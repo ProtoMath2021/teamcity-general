@@ -51,9 +51,6 @@ object Frontend : BuildType({
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_3"
             }
-            loginToRegistry = on {
-                dockerRegistryId = "PROJECT_EXT_4"
-            }
         }
     }
 
