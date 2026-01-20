@@ -24,7 +24,10 @@ object Frontend : BuildType({
                 source = file {
                     path = "Dockerfile"
                 }
-                namesAndTags = "protonmath/gpt-agent-ui:%build.counter%"
+                namesAndTags = """
+                    protonmath/gpt-agent-ui:%build.counter%
+                    registry.INTERNAL:5000/gpt-agent-ui:%build.counter%
+                """.trimIndent()
                 commandArgs = "--build-arg REACT_APP_API_URL=%env.REACT_APP_API_URL%"
             }
         }
@@ -34,6 +37,12 @@ object Frontend : BuildType({
                 namesAndTags = "protonmath/gpt-agent-ui:%build.counter%"
             }
         }
+        dockerCommand {
+            name = "push to private registry"
+            commandType = push {
+                namesAndTags = "registry.INTERNAL:5000/gpt-agent-ui:%build.counter%"
+            }
+        }
     }
 
     features {
@@ -41,6 +50,9 @@ object Frontend : BuildType({
             cleanupPushedImages = true
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_3"
+            }
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_4"
             }
         }
     }

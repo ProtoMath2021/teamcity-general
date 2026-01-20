@@ -31,10 +31,23 @@ object WhatsappControllerBuild : BuildType({
             }
         }
         dockerCommand {
+            name = "tag for private registry"
+            commandType = other {
+                subCommand = "tag"
+                commandArgs = "docker.io/library/whatsapp-controller:0.1.0 registry.INTERNAL:5000/whatsapp-controller:%build.number%"
+            }
+        }
+        dockerCommand {
             name = "publish"
             id = "publish"
             commandType = push {
                 namesAndTags = "protonmath/whatsapp-controller:%build.number%"
+            }
+        }
+        dockerCommand {
+            name = "publish to private registry"
+            commandType = push {
+                namesAndTags = "registry.INTERNAL:5000/whatsapp-controller:%build.number%"
             }
         }
     }
@@ -51,6 +64,9 @@ object WhatsappControllerBuild : BuildType({
             cleanupPushedImages = true
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_3"
+            }
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_4"
             }
         }
     }

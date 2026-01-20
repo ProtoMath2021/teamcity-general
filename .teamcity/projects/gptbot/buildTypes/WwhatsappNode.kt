@@ -66,6 +66,8 @@ object WwhatsappNode : BuildType({
                 namesAndTags = """
                     protonmath/wwhatsapp-node:%env.DOCKER_VERSION%
                     protonmath/wwhatsapp-node:latest
+                    registry.INTERNAL:5000/wwhatsapp-node:%env.DOCKER_VERSION%
+                    registry.INTERNAL:5000/wwhatsapp-node:latest
                 """.trimIndent()
             }
         }
@@ -87,6 +89,25 @@ object WwhatsappNode : BuildType({
                 matches("teamcity.build.branch", "refs/heads/(main|master)")
             }
         }
+
+        // Push to private registry
+        dockerCommand {
+            name = "publish to private registry"
+            commandType = push {
+                namesAndTags = "registry.INTERNAL:5000/wwhatsapp-node:%env.DOCKER_VERSION%"
+            }
+        }
+
+        // Publish latest tag to private registry only for main branch
+        dockerCommand {
+            name = "publish latest to private registry"
+            commandType = push {
+                namesAndTags = "registry.INTERNAL:5000/wwhatsapp-node:latest"
+            }
+            conditions {
+                matches("teamcity.build.branch", "refs/heads/(main|master)")
+            }
+        }
     }
 
     triggers {
@@ -100,6 +121,9 @@ object WwhatsappNode : BuildType({
             cleanupPushedImages = true
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_3"
+            }
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_4"
             }
         }
         

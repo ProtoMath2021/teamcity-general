@@ -41,6 +41,11 @@ project {
             userName = "protonmath"
             password = "zxxc0ce9241d87412ebc5a4bd5fa5ffed29"
         }
+        dockerRegistry {
+            id = "PROJECT_EXT_4"
+            name = "Private Registry"
+            url = "http://registry.INTERNAL:5000"
+        }
     }
 
     cleanup {

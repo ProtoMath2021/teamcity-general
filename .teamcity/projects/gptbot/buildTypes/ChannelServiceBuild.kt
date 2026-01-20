@@ -32,10 +32,23 @@ object ChannelServiceBuild : BuildType({
             }
         }
         dockerCommand {
+            name = "tag for private registry"
+            commandType = other {
+                subCommand = "tag"
+                commandArgs = "docker.io/library/channel-service:0.0.1-SNAPSHOT registry.INTERNAL:5000/channel-service:%build.number%"
+            }
+        }
+        dockerCommand {
             name = "publish"
             id = "publish"
             commandType = push {
                 namesAndTags = "protonmath/channel-service:%build.number%"
+            }
+        }
+        dockerCommand {
+            name = "publish to private registry"
+            commandType = push {
+                namesAndTags = "registry.INTERNAL:5000/channel-service:%build.number%"
             }
         }
     }
@@ -52,6 +65,9 @@ object ChannelServiceBuild : BuildType({
             cleanupPushedImages = true
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_3"
+            }
+            loginToRegistry = on {
+                dockerRegistryId = "PROJECT_EXT_4"
             }
         }
     }
